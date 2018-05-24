@@ -75,6 +75,7 @@
       <path value="$PROJECT_DIR$/vendor/dhii/data-key-value-aware-interface" />
       <path value="$PROJECT_DIR$/vendor/dhii/config-interface" />
       <path value="$PROJECT_DIR$/vendor/rebelcode/rcmod-eddbk-booking-logic" />
+      <path value="$PROJECT_DIR$/vendor/dhii/cqrs-resource-model-interface" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="5.4.0" />
