@@ -4,7 +4,7 @@ use Psr\Container\ContainerInterface;
 use RebelCode\EddBookings\Cart\Module\EddBkCartModule;
 
 // Module Info
-define('EDDBK_BOOKING_LOGIC_MODULE_KEY', 'eddbk_cart');
+define('EDDBK_CART_MODULE_KEY', 'eddbk_cart');
 // Directories
 define('EDDBK_CART_MODULE_DIR', __DIR__);
 define('EDDBK_CART_MODULE_CONFIG_DIR', EDDBK_CART_MODULE_DIR);
@@ -16,8 +16,8 @@ define('EDDBK_CART_MODULE_SERVICES_FILE', EDDBK_CART_MODULE_SERVICES_DIR . '/ser
 
 return function (ContainerInterface $c) {
     return new EddBkCartModule(
-        EDDBK_BOOKING_LOGIC_MODULE_KEY,
-        ['booking_logic'],
+        EDDBK_CART_MODULE_KEY,
+        [],
         $c->get('config_factory'),
         $c->get('container_factory'),
         $c->get('composite_container_factory'),
