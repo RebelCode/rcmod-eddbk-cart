@@ -19,6 +19,13 @@ return [
              * @since [*next-version*]
              */
             'data' => [
+                /**
+                 * The EDD key where cart item data is stored for cart items.
+                 *
+                 * @since [*next-version*]
+                 */
+                'key'            => 'options',
+
                 /*
                  * The main key used in cart item data by EDD Bookings.
                  *
