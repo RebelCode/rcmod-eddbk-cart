@@ -5,6 +5,7 @@ namespace RebelCode\EddBookings\Cart\Module;
 use Dhii\Config\ConfigFactoryInterface;
 use Dhii\Data\Container\ContainerFactoryInterface;
 use Dhii\Event\EventFactoryInterface;
+use Dhii\Event\EventInterface;
 use Dhii\Exception\InternalException;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Psr\Container\ContainerInterface;
@@ -69,5 +70,8 @@ class EddBkCartModule extends AbstractBaseModule
         if ($c === null) {
             return;
         }
+
+        // Attach handler that adds bookings to the cart after they complete a `cart` transition
+        $this->_attach('after_booking_transition', $c->get('eddbk_add_booking_to_cart_handler'));
     }
 }
