@@ -22,7 +22,7 @@ return [
     'eddbk_add_booking_to_cart_handler' => function (ContainerInterface $c) {
         return new AddBookingToCartHandler(
             $c->get('edd_cart'),
-            $c->get('edd_cart/items')
+            $c->get('edd_cart_config/items')
         );
     },
 
@@ -37,7 +37,7 @@ return [
             $c->get('booking_select_rm'),
             $c->get('booking_delete_rm'),
             $c->get('sql_expression_builder'),
-            $c->get('edd_cart/items')
+            $c->get('edd_cart_config/items')
         );
     },
 ];

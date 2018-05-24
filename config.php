@@ -6,7 +6,7 @@ return [
      *
      * @since [*next-version*]
      */
-    'edd_cart' => [
+    'edd_cart_config' => [
         /*
          * Config for cart items.
          *
