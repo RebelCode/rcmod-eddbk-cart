@@ -2,6 +2,7 @@
 
 use Psr\Container\ContainerInterface;
 use RebelCode\EddBookings\Cart\Module\AddBookingToCartHandler;
+use RebelCode\EddBookings\Cart\Module\RemoveBookingFromCartHandler;
 
 return [
     /*
@@ -23,5 +24,19 @@ return [
             $c->get('edd_cart'),
             $c->get('edd_cart/items')
         );
-    }
+    },
+
+    /*
+     * The handler that deletes bookings when they are removed from the EDD cart.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_remove_booking_from_cart_handler' => function (ContainerInterface $c) {
+        return new RemoveBookingFromCartHandler(
+            $c->get('edd_cart'),
+            $c->get('booking_delete_rm'),
+            $c->get('sql_expression_builder'),
+            $c->get('edd_cart/items')
+        );
+    },
 ];
