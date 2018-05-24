@@ -71,7 +71,7 @@ class EddBkCartModule extends AbstractBaseModule
             return;
         }
 
-        // Attach handler that adds bookings to the cart after they complete a `cart` transition
+        // Attach the handler that adds bookings to the cart after they complete a `cart` transition
         $this->_attach('after_booking_transition', $c->get('eddbk_add_booking_to_cart_handler'));
 
         // Attach the handler that deletes bookings when they are removed from the EDD cart
