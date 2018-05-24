@@ -34,6 +34,7 @@ return [
     'eddbk_remove_booking_from_cart_handler' => function (ContainerInterface $c) {
         return new RemoveBookingFromCartHandler(
             $c->get('edd_cart'),
+            $c->get('booking_select_rm'),
             $c->get('booking_delete_rm'),
             $c->get('sql_expression_builder'),
             $c->get('edd_cart/items')

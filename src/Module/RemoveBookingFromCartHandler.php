@@ -14,12 +14,14 @@ use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Storage\Resource\DeleteCapableInterface;
+use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventManager\EventInterface;
+use RebelCode\EddBookings\Logic\Module\BookingStatusInterface as Status;
 use stdClass;
 
 /**
@@ -75,6 +77,16 @@ class RemoveBookingFromCartHandler implements InvocableInterface
     protected $eddCart;
 
     /**
+     * The bookings SELECT resource model
+     *
+     * @since [*next-version*]
+     *
+     * @var SelectCapableInterface
+     */
+    protected $bookingsSelectRm;
+
+
+    /**
      * The bookings DELETE resource model
      *
      * @since [*next-version*]
@@ -107,17 +119,20 @@ class RemoveBookingFromCartHandler implements InvocableInterface
      * @since [*next-version*]
      *
      * @param EDD_Cart                                      $eddCart          The EDD cart instance.
+     * @param SelectCapableInterface                        $bookingsSelectRm The bookings SELECT resource model.
      * @param DeleteCapableInterface                        $bookingsDeleteRm The bookings DELETE resource model.
      * @param object                                        $exprBuilder      The expression builder.
      * @param array|stdClass|ArrayAccess|ContainerInterface $cartItemConfig   The cart item data config.
      */
     public function __construct(
         EDD_Cart $eddCart,
+        SelectCapableInterface $bookingsSelectRm,
         DeleteCapableInterface $bookingsDeleteRm,
         $exprBuilder,
         $cartItemConfig
     ) {
         $this->eddCart          = $eddCart;
+        $this->bookingsSelectRm = $bookingsSelectRm;
         $this->bookingsDeleteRm = $bookingsDeleteRm;
         $this->exprBuilder      = $exprBuilder;
         $this->cartItemConfig   = $cartItemConfig;
@@ -154,12 +169,18 @@ class RemoveBookingFromCartHandler implements InvocableInterface
             // Get the booking ID from the cart item at the index
             $bookingId = $this->_containerGetPath($cartItems, [$cartIndex, $dataKey, $eddBkKey, $bookingIdKey]);
 
-            // Build the condition for selecting the booking with the extracted booking ID
+            // Build the condition for selecting the booking with the booking ID
             $b = $this->exprBuilder;
             $c = $b->eq($b->var('id'), $b->lit($bookingId));
 
-            // Delete the booking
-            $this->bookingsDeleteRm->delete($c);
+            // Get the booking
+            $bookings = $this->bookingsSelectRm->select($c, [], 1);
+            $booking  = reset($bookings);
+
+            // If the booking has a cart status, delete it
+            if ($booking->get('status') === Status::STATUS_IN_CART) {
+                $this->bookingsDeleteRm->delete($c);
+            }
         } catch (NotFoundExceptionInterface $exception) {
             // Item does not have a booking ID.
             return;
