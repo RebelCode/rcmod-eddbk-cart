@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "fc84e54be5d7f4c27ff1daba062450fe",
+    "content-hash": "985166c7441dfd05e34f0ed5cd82565c",
     "packages": [
         {
             "name": "dhii/args-list-validation",
@@ -2655,6 +2655,52 @@
             ],
             "description": "PHPUnit: simple syntax to create mock-objects",
             "time": "2014-01-02T16:42:27+00:00"
+        },
+        {
+            "name": "rebelcode/rcmod-eddbk-booking-logic",
+            "version": "v0.1-alpha1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RebelCode/rcmod-eddbk-booking-logic.git",
+                "reference": "eb86cba0e1f9136f8187c24d2eb8461a271fc61a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RebelCode/rcmod-eddbk-booking-logic/zipball/eb86cba0e1f9136f8187c24d2eb8461a271fc61a",
+                "reference": "eb86cba0e1f9136f8187c24d2eb8461a271fc61a",
+                "shasum": ""
+            },
+            "require": {
+                "dhii/validation-base": "^0.2-alpha2",
+                "php": "^5.4 | ^7.0",
+                "rebelcode/modular": "^0.1-alpha1"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/output-renderer-interface": "^0.3",
+                "dhii/php-cs-fixer-config": "^0.1",
+                "johnpbloch/wordpress-core": "^4.0",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "rc-module",
+            "autoload": {
+                "psr-4": {
+                    "RebelCode\\EddBookings\\Logic\\Module\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "RebelCode",
+                    "email": "dev@rebelcode.com"
+                }
+            ],
+            "description": "A RebelCode module for the booking logic in EDD Bookings.",
+            "time": "2018-05-21T15:14:41+00:00"
         },
         {
             "name": "satooshi/php-coveralls",
