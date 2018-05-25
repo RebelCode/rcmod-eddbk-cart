@@ -13,6 +13,8 @@ use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
+use Dhii\Iterator\CountIterableCapableTrait;
+use Dhii\Iterator\ResolveIteratorCapableTrait;
 use Dhii\Storage\Resource\DeleteCapableInterface;
 use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
@@ -32,6 +34,12 @@ use stdClass;
  */
 class RemoveBookingFromCartHandler implements InvocableInterface
 {
+    /* @since [*next-version*] */
+    use CountIterableCapableTrait;
+
+    /* @since [*next-version*] */
+    use ResolveIteratorCapableTrait;
+
     /* @since [*next-version*] */
     use ContainerGetCapableTrait;
 
@@ -160,13 +168,12 @@ class RemoveBookingFromCartHandler implements InvocableInterface
         $bookingIdKey = $this->_containerGetPath($this->cartItemConfig, ['data', 'booking_id_key']);
 
         try {
-            // Get the cart index from the event and normalize it
+            // Get the cart index from the event (provided by the EDD hook) and normalize it
             $cartIndex = $event->getParam(0);
             $cartIndex = $this->_normalizeInt($cartIndex);
 
             // Get all the cart items - EDD does not provide a single cart item getter!
             $cartItems = $this->eddCart->get_contents();
-
             // Get the booking ID from the cart item at the index
             $bookingId = $this->_containerGetPath($cartItems, [$cartIndex, $dataKey, $eddBkKey, $bookingIdKey]);
 
@@ -174,11 +181,14 @@ class RemoveBookingFromCartHandler implements InvocableInterface
             $b = $this->exprBuilder;
             $c = $b->eq($b->var('id'), $b->lit($bookingId));
 
-            // Get the booking
-            $bookings = $this->bookingsSelectRm->select($c, [], 1);
-            $booking  = reset($bookings);
+            // Get the bookings that match - only 1 should match
+            $bookings = $this->bookingsSelectRm->select($c);
+            if ($this->_countIterable($bookings) !== 1) {
+                return;
+            }
 
             // If the booking has a cart status, delete it
+            $booking = reset($bookings);
             if ($booking->get('status') === Status::STATUS_IN_CART) {
                 $this->bookingsDeleteRm->delete($c);
             }
