@@ -76,5 +76,8 @@ class EddBkCartModule extends AbstractBaseModule
 
         // Attach the handler that deletes bookings when they are removed from the EDD cart
         $this->_attach('edd_pre_remove_from_cart', $c->get('eddbk_remove_booking_from_cart_handler'));
+
+        // Attach the handler that schedules bookings when the payment for its purchase is complete
+        $this->_attach('edd_update_payment_status', $c->get('eddbk_submit_booking_on_payment_handler'));
     }
 }
