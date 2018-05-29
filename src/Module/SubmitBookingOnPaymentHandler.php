@@ -125,21 +125,21 @@ class SubmitBookingOnPaymentHandler implements InvocableInterface
      * @param TransitionerInterface                         $transitioner     The booking transitioner.
      * @param SelectCapableInterface                        $bookingsSelectRm The bookings SELECT resource model.
      * @param UpdateCapableInterface                        $bookingsUpdateRm The bookings UPDATE resource model.
-     * @param object                                        $exprBuilder      The expression builder.
      * @param array|stdClass|ArrayAccess|ContainerInterface $cartItemConfig   The cart item data config.
+     * @param object                                        $exprBuilder      The expression builder.
      */
     public function __construct(
         TransitionerInterface $transitioner,
         SelectCapableInterface $bookingsSelectRm,
         UpdateCapableInterface $bookingsUpdateRm,
-        $cartItemConfig,
-        $exprBuilder
+        $exprBuilder,
+        $cartItemConfig
     ) {
         $this->transitioner     = $transitioner;
         $this->bookingsSelectRm = $bookingsSelectRm;
         $this->bookingsUpdateRm = $bookingsUpdateRm;
-        $this->cartItemConfig   = $cartItemConfig;
         $this->exprBuilder      = $exprBuilder;
+        $this->cartItemConfig   = $cartItemConfig;
     }
 
     /**
