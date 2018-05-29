@@ -4,6 +4,7 @@ use Psr\Container\ContainerInterface;
 use RebelCode\EddBookings\Cart\Module\AddBookingToCartHandler;
 use RebelCode\EddBookings\Cart\Module\RemoveBookingFromCartHandler;
 use RebelCode\EddBookings\Cart\Module\SubmitBookingOnPaymentHandler;
+use RebelCode\EddBookings\Cart\Module\ValidateCartBookingHandler;
 
 return [
     /*
@@ -52,6 +53,21 @@ return [
             $c->get('booking_transitioner'),
             $c->get('bookings_select_rm'),
             $c->get('bookings_update_rm'),
+            $c->get('sql_expression_builder'),
+            $c->get('edd_cart_config/items')
+        );
+    },
+
+    /*
+     * The handler that validates bookings in the EDD cart.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_validate_cart_bookings_handler' => function (ContainerInterface $c) {
+        return new ValidateCartBookingHandler(
+            $c->get('edd_cart'),
+            $c->get('booking_transitioner'),
+            $c->get('bookings_select_rm'),
             $c->get('sql_expression_builder'),
             $c->get('edd_cart_config/items')
         );

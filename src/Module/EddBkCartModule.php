@@ -79,5 +79,8 @@ class EddBkCartModule extends AbstractBaseModule
 
         // Attach the handler that schedules bookings when the payment for its purchase is complete
         $this->_attach('edd_update_payment_status', $c->get('eddbk_submit_booking_on_payment_handler'));
+
+        // Attach the handler that validates bookings in the EDD cart when the cart is submitted for checkout
+        $this->_attach('edd_checkout_error_checks', $c->get('eddbk_validate_cart_bookings_handler'));
     }
 }
