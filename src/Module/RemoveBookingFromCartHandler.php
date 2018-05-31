@@ -167,34 +167,35 @@ class RemoveBookingFromCartHandler implements InvocableInterface
         $eddBkKey     = $this->_containerGetPath($this->cartItemConfig, ['data', 'eddbk_key']);
         $bookingIdKey = $this->_containerGetPath($this->cartItemConfig, ['data', 'booking_id_key']);
 
-        try {
-            // Get the cart index from the event (provided by the EDD hook) and normalize it
-            $cartIndex = $event->getParam(0);
-            $cartIndex = $this->_normalizeInt($cartIndex);
+        // Get the cart index from the event (provided by the EDD hook) and normalize it
+        $cartIndex = $event->getParam(0);
+        $cartIndex = $this->_normalizeInt($cartIndex);
 
-            // Get all the cart items - EDD does not provide a single cart item getter!
-            $cartItems = $this->eddCart->get_contents();
+        // Get all the cart items - EDD does not provide a single cart item getter!
+        $cartItems = $this->eddCart->get_contents();
+
+        try {
             // Get the booking ID from the cart item at the index
             $bookingId = $this->_containerGetPath($cartItems, [$cartIndex, $dataKey, $eddBkKey, $bookingIdKey]);
-
-            // Build the condition for selecting the booking with the booking ID
-            $b = $this->exprBuilder;
-            $c = $b->eq($b->var('id'), $b->lit($bookingId));
-
-            // Get the bookings that match - only 1 should match
-            $bookings = $this->bookingsSelectRm->select($c);
-            if ($this->_countIterable($bookings) !== 1) {
-                return;
-            }
-
-            // If the booking has a cart status, delete it
-            $booking = reset($bookings);
-            if ($booking->get('status') === Status::STATUS_IN_CART) {
-                $this->bookingsDeleteRm->delete($c);
-            }
         } catch (NotFoundExceptionInterface $exception) {
             // Item does not have a booking ID.
             return;
+        }
+
+        // Build the condition for selecting the booking with the booking ID
+        $b = $this->exprBuilder;
+        $c = $b->eq($b->var('id'), $b->lit($bookingId));
+
+        // Get the bookings that match - only 1 should match
+        $bookings = $this->bookingsSelectRm->select($c);
+        if ($this->_countIterable($bookings) !== 1) {
+            return;
+        }
+
+        // If the booking has a cart status, delete it
+        $booking = reset($bookings);
+        if ($booking->get('status') === Status::STATUS_IN_CART) {
+            $this->bookingsDeleteRm->delete($c);
         }
     }
 }
