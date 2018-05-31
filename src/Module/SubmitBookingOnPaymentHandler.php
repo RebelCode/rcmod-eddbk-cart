@@ -190,30 +190,31 @@ class SubmitBookingOnPaymentHandler implements InvocableInterface
             try {
                 // Get the booking ID from the additional item data
                 $_bookingId = $this->_containerGetPath($_item, $bookingIdPath);
-                // Fetch the corresponding booking from storage
-                $_condition = $b->eq($b->var('id'), $b->lit($_bookingId));
-                $_bookings  = $this->bookingsSelectRm->select($_condition);
-                // Stop if no booking was found, or if multiple bookings matched the ID (for some reason?)
-                if ($this->_countIterable($_bookings) !== 1) {
-                    continue;
-                }
-
-                // Get the booking
-                $_booking = reset($_bookings);
-                $_booking = $this->transitioner->transition($_booking, T::TRANSITION_SUBMIT);
-
-                // Prepare the change set
-                $_changeSet = [
-                    'payment_id' => $paymentId,
-                    'client_id'  => $this->_getPaymentCustomerId($paymentId),
-                    'status'     => $_booking->getStatus(),
-                ];
-
-                // Update booking
-                $this->bookingsUpdateRm->update($_changeSet, $_condition);
             } catch (NotFoundExceptionInterface $exception) {
                 continue;
             }
+
+            // Fetch the corresponding booking from storage
+            $_condition = $b->eq($b->var('id'), $b->lit($_bookingId));
+            $_bookings  = $this->bookingsSelectRm->select($_condition);
+            // Stop if no booking was found, or if multiple bookings matched the ID (for some reason?)
+            if ($this->_countIterable($_bookings) !== 1) {
+                continue;
+            }
+
+            // Get the booking
+            $_booking = reset($_bookings);
+            $_booking = $this->transitioner->transition($_booking, T::TRANSITION_SUBMIT);
+
+            // Prepare the change set
+            $_changeSet = [
+                'payment_id' => $paymentId,
+                'client_id'  => $this->_getPaymentCustomerId($paymentId),
+                'status'     => $_booking->getStatus(),
+            ];
+
+            // Update booking
+            $this->bookingsUpdateRm->update($_changeSet, $_condition);
         }
 
         return;
