@@ -20,6 +20,7 @@ use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
+use Dhii\Util\String\StringableInterface as Stringable;
 use EDD_Cart;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -182,6 +183,18 @@ class RemoveBookingFromCartHandler implements InvocableInterface
             return;
         }
 
+        $this->_removeBookingFromCart($bookingId);
+    }
+
+    /**
+     * Removes the booking with the given ID from the EDD cart.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string|Stringable $bookingId The booking ID.
+     */
+    protected function _removeBookingFromCart($bookingId)
+    {
         // Build the condition for selecting the booking with the booking ID
         $b = $this->exprBuilder;
         $c = $b->eq($b->var('id'), $b->lit($bookingId));
