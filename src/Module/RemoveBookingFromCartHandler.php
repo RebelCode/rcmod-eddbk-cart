@@ -163,21 +163,22 @@ class RemoveBookingFromCartHandler implements InvocableInterface
             );
         }
 
+        // Get the cart index from the event (provided by the EDD hook) and normalize it
+        $cartIndex = $event->getParam(0);
+        $cartIndex = $this->_normalizeInt($cartIndex);
         // Get the cart item data keys from the cart item config
         $dataKey      = $this->_containerGetPath($this->cartItemConfig, ['data', 'key']);
         $eddBkKey     = $this->_containerGetPath($this->cartItemConfig, ['data', 'eddbk_key']);
         $bookingIdKey = $this->_containerGetPath($this->cartItemConfig, ['data', 'booking_id_key']);
-
-        // Get the cart index from the event (provided by the EDD hook) and normalize it
-        $cartIndex = $event->getParam(0);
-        $cartIndex = $this->_normalizeInt($cartIndex);
+        // The booking ID path in the cart item
+        $bookingIdPath = [$cartIndex, $dataKey, $eddBkKey, $bookingIdKey];
 
         // Get all the cart items - EDD does not provide a single cart item getter!
         $cartItems = $this->eddCart->get_contents();
 
         try {
             // Get the booking ID from the cart item at the index
-            $bookingId = $this->_containerGetPath($cartItems, [$cartIndex, $dataKey, $eddBkKey, $bookingIdKey]);
+            $bookingId = $this->_containerGetPath($cartItems, $bookingIdPath);
         } catch (NotFoundExceptionInterface $exception) {
             // Item does not have a booking ID.
             return;
