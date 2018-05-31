@@ -18,6 +18,7 @@ use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
+use Dhii\Util\String\StringableInterface as Stringable;
 use Dhii\Validation\Exception\ValidationFailedExceptionInterface;
 use EDD_Cart;
 use Exception as RootException;
@@ -181,7 +182,10 @@ class ValidateCartBookingHandler implements InvocableInterface
 
             // Check that only 1 booking was retrieved
             if ($this->_countIterable($bookings) !== 1) {
-                \edd_set_error('eddbk_invalid_booking_id', $this->__('A cart item has an invalid booking ID.'));
+                $this->_addEddCheckoutError(
+                    'eddbk_invalid_booking_id',
+                    $this->__('A cart item has an invalid booking ID.')
+                );
             }
 
             // Get the booking
@@ -193,7 +197,7 @@ class ValidateCartBookingHandler implements InvocableInterface
             } catch (ValidationFailedExceptionInterface $exception) {
                 // Register all validation errors as EDD checkout errors
                 foreach ($exception->getValidationErrors() as $key => $error) {
-                    \edd_set_error(
+                    $this->_addEddCheckoutError(
                         sprintf('eddbk_invalid_booking_%s', $key),
                         $error
                     );
@@ -242,5 +246,18 @@ class ValidateCartBookingHandler implements InvocableInterface
 
         /* @var $exception ValidationFailedExceptionInterface|null */
         return $exception;
+    }
+
+    /**
+     * Adds an EDD cart checkout error.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable $key The error key.
+     * @param string|Stringable $message The error message.
+     */
+    protected function _addEddCheckoutError($key, $message)
+    {
+        \edd_set_error($key, $message);
     }
 }
