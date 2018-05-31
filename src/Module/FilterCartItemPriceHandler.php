@@ -117,6 +117,28 @@ class FilterCartItemPriceHandler implements InvocableInterface
     protected $exprBuilder;
 
     /**
+     * Constructor.
+     *
+     * @since [*next-version*]
+     *
+     * @param SelectCapableInterface                        $bookingsSelectRm The bookings SELECT resource model.
+     * @param EvaluableInterface|null                       $priceEvaluator   The booking price evaluator.
+     * @param object                                        $exprBuilder      The expression builder.
+     * @param array|ArrayAccess|ContainerInterface|stdClass $cartItemConfig   The cart item configuration.
+     */
+    public function __construct(
+        SelectCapableInterface $bookingsSelectRm,
+        EvaluableInterface $priceEvaluator,
+        $exprBuilder,
+        $cartItemConfig
+    ) {
+        $this->bookingsSelectRm = $bookingsSelectRm;
+        $this->priceEvaluator   = $priceEvaluator;
+        $this->exprBuilder      = $exprBuilder;
+        $this->cartItemConfig   = $cartItemConfig;
+    }
+
+    /**
      * Retrieves the booking price evaluator.
      *
      * @since [*next-version*]
@@ -163,8 +185,8 @@ class FilterCartItemPriceHandler implements InvocableInterface
             );
         }
 
-        $price     = $event->getParam(0);
-        $options   = $event->getParam(2);
+        $price   = $event->getParam(0);
+        $options = $event->getParam(2);
 
         $eddBkKey      = $this->_containerGetPath($this->cartItemConfig, ['data', 'eddbk_key']);
         $bookingIdKey  = $this->_containerGetPath($this->cartItemConfig, ['data', 'booking_id_key']);
