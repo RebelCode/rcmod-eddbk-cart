@@ -217,7 +217,7 @@ class ValidateCartBookingHandler implements InvocableInterface
             $this->transitioner->transition($booking, Transition::TRANSITION_SUBMIT);
         } catch (CouldNotTransitionExceptionInterface $exception) {
             // Get the validation failure exception
-            $validationException = $this->_getValidationFailedException($exception);
+            $validationException = $this->_resolveValidationFailedException($exception);
             // If found, throw it
             if ($validationException instanceof ValidationFailedExceptionInterface) {
                 throw $validationException;
@@ -234,7 +234,7 @@ class ValidateCartBookingHandler implements InvocableInterface
      *
      * @return ValidationFailedExceptionInterface|null The found validation failure exception or null if not found.
      */
-    protected function _getValidationFailedException(RootException $exception)
+    protected function _resolveValidationFailedException(RootException $exception)
     {
         while ($exception !== null && !($exception instanceof ValidationFailedExceptionInterface)) {
             $exception = $exception->getPrevious();
