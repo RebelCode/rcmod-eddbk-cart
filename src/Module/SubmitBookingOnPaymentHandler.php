@@ -83,7 +83,7 @@ class SubmitBookingOnPaymentHandler implements InvocableInterface
     protected $transitioner;
 
     /**
-     * The bookings SELECT resource model
+     * The bookings SELECT resource model.
      *
      * @since [*next-version*]
      *
@@ -92,7 +92,7 @@ class SubmitBookingOnPaymentHandler implements InvocableInterface
     protected $bookingsSelectRm;
 
     /**
-     * The bookings UPDATE resource model
+     * The bookings UPDATE resource model.
      *
      * @since [*next-version*]
      *

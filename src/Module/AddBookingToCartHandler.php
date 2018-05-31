@@ -136,8 +136,8 @@ class AddBookingToCartHandler implements InvocableInterface
      *
      * @param BookingInterface|ContainerInterface $booking The booking - must be a valid booking and container instance.
      *
-     * @throws InvalidArgumentException If the booking is not a valid container.
-     * @throws NotFoundExceptionInterface If the service ID was not be found in the booking data.
+     * @throws InvalidArgumentException    If the booking is not a valid container.
+     * @throws NotFoundExceptionInterface  If the service ID was not be found in the booking data.
      * @throws ContainerExceptionInterface If an error occurred while reading the booking data.
      */
     protected function _addToCart(BookingInterface $booking)

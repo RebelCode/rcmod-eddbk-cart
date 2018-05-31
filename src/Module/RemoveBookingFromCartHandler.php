@@ -87,7 +87,7 @@ class RemoveBookingFromCartHandler implements InvocableInterface
     protected $eddCart;
 
     /**
-     * The bookings SELECT resource model
+     * The bookings SELECT resource model.
      *
      * @since [*next-version*]
      *
@@ -95,9 +95,8 @@ class RemoveBookingFromCartHandler implements InvocableInterface
      */
     protected $bookingsSelectRm;
 
-
     /**
-     * The bookings DELETE resource model
+     * The bookings DELETE resource model.
      *
      * @since [*next-version*]
      *

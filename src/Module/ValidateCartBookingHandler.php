@@ -95,7 +95,7 @@ class ValidateCartBookingHandler implements InvocableInterface
     protected $transitioner;
 
     /**
-     * The bookings SELECT resource model
+     * The bookings SELECT resource model.
      *
      * @since [*next-version*]
      *
@@ -173,7 +173,7 @@ class ValidateCartBookingHandler implements InvocableInterface
             }
 
             // Get the booking that matches the ID
-            $bookings  = $this->bookingsSelectRm->select(
+            $bookings = $this->bookingsSelectRm->select(
                 $b->eq(
                     $b->ef('booking', 'id'),
                     $b->lit($bookingId)
@@ -253,7 +253,7 @@ class ValidateCartBookingHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable $key The error key.
+     * @param string|Stringable $key     The error key.
      * @param string|Stringable $message The error message.
      */
     protected function _addEddCheckoutError($key, $message)
