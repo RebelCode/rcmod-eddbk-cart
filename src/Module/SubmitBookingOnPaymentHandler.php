@@ -19,6 +19,7 @@ use Dhii\Storage\Resource\UpdateCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
+use Dhii\Util\String\StringableInterface as Stringable;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventManager\EventInterface;
@@ -172,7 +173,7 @@ class SubmitBookingOnPaymentHandler implements InvocableInterface
         }
 
         // Get the payment meta
-        $paymentMeta = \edd_get_payment_meta($paymentId);
+        $paymentMeta = $this->_getPaymentMetaData($paymentId);
         // Get the items that were in the cart for this payment
         $items = $this->_containerGet($paymentMeta, 'downloads');
 
@@ -204,7 +205,7 @@ class SubmitBookingOnPaymentHandler implements InvocableInterface
                 // Prepare the change set
                 $_changeSet = [
                     'payment_id' => $paymentId,
-                    'client_id'  => \edd_get_payment_customer_id($paymentId),
+                    'client_id'  => $this->_getPaymentCustomerId($paymentId),
                     'status'     => $_booking->getStatus(),
                 ];
 
@@ -216,5 +217,33 @@ class SubmitBookingOnPaymentHandler implements InvocableInterface
         }
 
         return;
+    }
+
+    /**
+     * Retrieves the meta data for a payment, given by its ID.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string $paymentId The payment ID.
+     *
+     * @return int|string|Stringable
+     */
+    protected function _getPaymentMetaData($paymentId)
+    {
+        return \edd_get_payment_meta($paymentId);
+    }
+
+    /**
+     * Retrieves the customer ID for a payment, given by its ID.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string $paymentId The payment ID.
+     *
+     * @return int|string|Stringable The customer ID.
+     */
+    protected function _getPaymentCustomerId($paymentId)
+    {
+        return \edd_get_payment_customer_id($paymentId);
     }
 }
