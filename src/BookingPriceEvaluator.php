@@ -145,7 +145,7 @@ class BookingPriceEvaluator implements EvaluableInterface
         $lengths = $this->_containerGet($service, 'session_lengths');
 
         foreach ($lengths as $_lengthInfo) {
-            $_length = $this->_normalizeInt($this->_containerGet($_lengthInfo, 'length'));
+            $_length = $this->_normalizeInt($this->_containerGet($_lengthInfo, 'sessionLength'));
 
             if ($duration === $_length) {
                 return $this->_containerGet($_lengthInfo, 'price');
