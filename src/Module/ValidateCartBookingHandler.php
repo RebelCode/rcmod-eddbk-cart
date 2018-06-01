@@ -195,15 +195,27 @@ class ValidateCartBookingHandler implements InvocableInterface
                 // Validate it
                 $this->_validateBooking($booking);
             } catch (ValidationFailedExceptionInterface $exception) {
-                // Register all validation errors as EDD checkout errors
-                foreach ($exception->getValidationErrors() as $key => $error) {
-                    $this->_addEddCheckoutError(
-                        sprintf('eddbk_invalid_booking_%s', $key),
-                        $error
-                    );
+                foreach ($this->_getBookingValidationErrors($exception) as $key => $error) {
+                    $this->_addEddCheckoutError($key, $error);
                 }
             }
         }
+    }
+
+    /**
+     * Retrieves the booking validation errors when a booking in the cart fails validation.
+     *
+     * @since [*next-version*]
+     *
+     * @param ValidationFailedExceptionInterface $exception The validation exception.
+     *
+     * @return string[] The validation errors related to bookings, keyed by a unique code.
+     */
+    protected function _getBookingValidationErrors(ValidationFailedExceptionInterface $exception)
+    {
+        return [
+            'eddbk_unavailable_booking' => $this->__('This booking is not available. Please contact the site administrator for more details')
+        ];
     }
 
     /**
