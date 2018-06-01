@@ -132,7 +132,8 @@ class BookingPriceEvaluator implements EvaluableInterface
         $b = $this->exprBuilder;
 
         $condition = $b->eq($b->ef('service', 'id'), $b->lit($serviceId));
-        $services  = $this->servicesSelectRm->select($condition);
+        // EDD Bookings' services select RM only supports AND top-level expressions
+        $services  = $this->servicesSelectRm->select($b->and($condition));
 
         if ($this->_countIterable($services) === 0) {
             throw $this->_createRuntimeException(
