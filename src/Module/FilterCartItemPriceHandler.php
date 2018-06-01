@@ -22,6 +22,7 @@ use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
+use Exception;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -180,6 +181,8 @@ class FilterCartItemPriceHandler implements InvocableInterface
      * {@inheritdoc}
      *
      * @since [*next-version*]
+     *
+     * @return void
      */
     public function __invoke()
     {
@@ -191,7 +194,6 @@ class FilterCartItemPriceHandler implements InvocableInterface
             );
         }
 
-        $price   = $event->getParam(0);
         $options = $event->getParam(2);
 
         $eddBkKey      = $this->_containerGetPath($this->cartItemConfig, ['data', 'eddbk_key']);
@@ -201,7 +203,7 @@ class FilterCartItemPriceHandler implements InvocableInterface
         try {
             $bookingId = $this->_containerGetPath($options, $bookingIdPath);
         } catch (NotFoundExceptionInterface $exception) {
-            return $price;
+            return;
         }
 
         // Alias expression builder
@@ -212,12 +214,18 @@ class FilterCartItemPriceHandler implements InvocableInterface
         $bookings  = $this->bookingsSelectRm->select($condition);
         // Stop if no booking was found, or if multiple bookings matched the ID (for some reason?)
         if ($this->_countIterable($bookings) !== 1) {
-            return $price;
+            return;
         }
         // Get the booking
         $booking = reset($bookings);
 
-        return $this->_evaluateBookingPrice($booking);
+        try {
+            $price = $this->_evaluateBookingPrice($booking);
+        } catch (Exception $exception) {
+            return;
+        }
+
+        $event->setParams([0 => $price] + $event->getParams());
     }
 
     /**
