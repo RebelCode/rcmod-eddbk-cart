@@ -85,6 +85,7 @@ return [
         return new FilterCartItemPriceHandler(
             $c->get('bookings_select_rm'),
             $c->get('eddbk_booking_price_evaluator'),
+            $c->get('eddbk_booking_value_aware_factory'),
             $c->get('sql_expression_builder'),
             $c->get('edd_cart_config/items')
         );
@@ -107,7 +108,7 @@ return [
      *
      * @since [*next-version*]
      */
-    'booking_value_aware_factory' => function (ContainerInterface $c) {
+    'eddbk_booking_value_aware_factory' => function (ContainerInterface $c) {
         return new BookingValueAwareFactory();
     },
 ];

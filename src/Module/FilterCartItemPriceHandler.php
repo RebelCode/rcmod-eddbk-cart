@@ -12,6 +12,7 @@ use Dhii\Evaluable\EvaluableInterface;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
 use Dhii\Factory\FactoryAwareTrait;
+use Dhii\Factory\FactoryInterface;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Iterator\CountIterableCapableTrait;
@@ -121,21 +122,26 @@ class FilterCartItemPriceHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param SelectCapableInterface                        $bookingsSelectRm The bookings SELECT resource model.
-     * @param EvaluableInterface|null                       $priceEvaluator   The booking price evaluator.
-     * @param object                                        $exprBuilder      The expression builder.
-     * @param array|ArrayAccess|ContainerInterface|stdClass $cartItemConfig   The cart item configuration.
+     * @param SelectCapableInterface                        $bookingsSelectRm  The bookings SELECT resource model.
+     * @param EvaluableInterface|null                       $priceEvaluator    The booking price evaluator.
+     * @param FactoryInterface                              $valueAwareFactory The value aware factory.
+     * @param object                                        $exprBuilder       The expression builder.
+     * @param array|ArrayAccess|ContainerInterface|stdClass $cartItemConfig    The cart item configuration.
      */
     public function __construct(
         SelectCapableInterface $bookingsSelectRm,
         EvaluableInterface $priceEvaluator,
+        FactoryInterface $valueAwareFactory,
         $exprBuilder,
         $cartItemConfig
     ) {
+        $this->_setPriceEvaluator($priceEvaluator);
+        $this->_setBookingValueAwareFactory($valueAwareFactory);
+
         $this->bookingsSelectRm = $bookingsSelectRm;
-        $this->priceEvaluator   = $priceEvaluator;
         $this->exprBuilder      = $exprBuilder;
         $this->cartItemConfig   = $cartItemConfig;
+
     }
 
     /**
