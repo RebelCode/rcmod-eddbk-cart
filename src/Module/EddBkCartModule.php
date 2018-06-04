@@ -81,5 +81,8 @@ class EddBkCartModule extends AbstractBaseModule
 
         // Attach the handler that validates bookings in the EDD cart when the cart is submitted for checkout
         $this->_attach('edd_checkout_error_checks', $c->get('eddbk_validate_cart_bookings_handler'));
+
+        // Attach the handler that filters cart item prices
+        $this->_attach('edd_cart_item_price', $c->get('eddbk_filter_cart_item_price_handler'));
     }
 }

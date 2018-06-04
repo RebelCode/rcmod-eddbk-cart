@@ -1,7 +1,10 @@
 <?php
 
 use Psr\Container\ContainerInterface;
+use RebelCode\EddBookings\Cart\BookingPriceEvaluator;
+use RebelCode\EddBookings\Cart\BookingValueAwareFactory;
 use RebelCode\EddBookings\Cart\Module\AddBookingToCartHandler;
+use RebelCode\EddBookings\Cart\Module\FilterCartItemPriceHandler;
 use RebelCode\EddBookings\Cart\Module\RemoveBookingFromCartHandler;
 use RebelCode\EddBookings\Cart\Module\SubmitBookingOnPaymentHandler;
 use RebelCode\EddBookings\Cart\Module\ValidateCartBookingHandler;
@@ -71,5 +74,41 @@ return [
             $c->get('sql_expression_builder'),
             $c->get('edd_cart_config/items')
         );
+    },
+
+    /**
+     * The handler that filters cart item prices.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_filter_cart_item_price_handler' => function (ContainerInterface $c) {
+        return new FilterCartItemPriceHandler(
+            $c->get('bookings_select_rm'),
+            $c->get('eddbk_booking_price_evaluator'),
+            $c->get('eddbk_booking_value_aware_factory'),
+            $c->get('sql_expression_builder'),
+            $c->get('edd_cart_config/items')
+        );
+    },
+
+    /**
+     * The booking price evaluator.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_booking_price_evaluator' => function (ContainerInterface $c) {
+        return new BookingPriceEvaluator(
+            $c->get('eddbk_services_select_rm'),
+            $c->get('sql_expression_builder')
+        );
+    },
+
+    /**
+     * The factory that creates booking value-aware instances.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_booking_value_aware_factory' => function (ContainerInterface $c) {
+        return new BookingValueAwareFactory();
     },
 ];

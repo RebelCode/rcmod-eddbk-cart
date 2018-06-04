@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "332f4fe928af76399ce5bce919f77a38",
+    "content-hash": "b30a6bf68b69fca9e5e89770b3615d52",
     "packages": [
         {
             "name": "dhii/args-list-validation",
@@ -1388,16 +1388,16 @@
         },
         {
             "name": "dhii/wp-events",
-            "version": "v0.3-alpha1",
+            "version": "v0.3-alpha2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Dhii/wp-events.git",
-                "reference": "265f8dd9a79b97d23e1c7abaae56c27694138f3b"
+                "reference": "feee39e602709ae0e5d557d3ae48694d3c7310da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Dhii/wp-events/zipball/265f8dd9a79b97d23e1c7abaae56c27694138f3b",
-                "reference": "265f8dd9a79b97d23e1c7abaae56c27694138f3b",
+                "url": "https://api.github.com/repos/Dhii/wp-events/zipball/feee39e602709ae0e5d557d3ae48694d3c7310da",
+                "reference": "feee39e602709ae0e5d557d3ae48694d3c7310da",
                 "shasum": ""
             },
             "require": {
@@ -1437,7 +1437,7 @@
                 }
             ],
             "description": "A PSR-14 compliant event wrapper for WordPress.",
-            "time": "2018-05-11T10:15:34+00:00"
+            "time": "2018-05-29T10:55:27+00:00"
         },
         {
             "name": "psr/container",
@@ -1756,6 +1756,151 @@
             "time": "2017-03-07T16:25:09+00:00"
         },
         {
+            "name": "dhii/evaluable-interface",
+            "version": "v0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/evaluable-interface.git",
+                "reference": "da21c1a22cf0e49d5b05e93937928887657e49ed"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/evaluable-interface/zipball/da21c1a22cf0e49d5b05e93937928887657e49ed",
+                "reference": "da21c1a22cf0e49d5b05e93937928887657e49ed",
+                "shasum": ""
+            },
+            "require": {
+                "dhii/data-key-value-aware-interface": "^0.1",
+                "php": "^5.3.9 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/php-cs-fixer-config": "dev-php-5.3",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\Evaluable\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "Increasing interoperability for objects that can be evaluated",
+            "time": "2017-01-21T18:30:17+00:00"
+        },
+        {
+            "name": "dhii/expression-interface",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/expression-interface.git",
+                "reference": "ba61f3265c13a73e5275b361eb343dc6e81c09be"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/expression-interface/zipball/ba61f3265c13a73e5275b361eb343dc6e81c09be",
+                "reference": "ba61f3265c13a73e5275b361eb343dc6e81c09be",
+                "shasum": ""
+            },
+            "require": {
+                "dhii/data-key-value-aware-interface": "^0.1",
+                "dhii/evaluable-interface": "^0.1",
+                "dhii/type-interface": "^0.1",
+                "php": "^5.3 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/php-cs-fixer-config": "dev-php-5.3",
+                "dhii/stringable-interface": "^0.1",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\Expression\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "Interoperable interfaces for representing expressions.",
+            "time": "2018-01-13T14:56:39+00:00"
+        },
+        {
+            "name": "dhii/machine-state-machine-interface",
+            "version": "v0.1-alpha1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/machine-state-machine-interface.git",
+                "reference": "55adc44cb930d1c57d0996d61725884e9c8008b8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/machine-state-machine-interface/zipball/55adc44cb930d1c57d0996d61725884e9c8008b8",
+                "reference": "55adc44cb930d1c57d0996d61725884e9c8008b8",
+                "shasum": ""
+            },
+            "require": {
+                "dhii/data-key-value-aware-interface": "^0.1",
+                "dhii/exception-interface": "^0.1|^0.2",
+                "dhii/factory-interface": "^0.1-alpha1",
+                "dhii/stringable-interface": "^0.1",
+                "php": "^5.3 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/php-cs-fixer-config": "dev-php-5.3",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\State\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "Interfaces for state machines.",
+            "time": "2018-05-15T08:27:56+00:00"
+        },
+        {
             "name": "dhii/php-cs-fixer-config",
             "version": "v0.1",
             "source": {
@@ -1795,6 +1940,55 @@
             ],
             "description": "A default PHP CS Fixer config implementation",
             "time": "2017-07-23T12:53:27+00:00"
+        },
+        {
+            "name": "dhii/state-machine-abstract",
+            "version": "v0.1-alpha1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/state-machine-abstract.git",
+                "reference": "cb5f706edd74d1c747f09f505b859255b13a5b27"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/state-machine-abstract/zipball/cb5f706edd74d1c747f09f505b859255b13a5b27",
+                "reference": "cb5f706edd74d1c747f09f505b859255b13a5b27",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/machine-state-machine-interface": "^0.1-alpha1",
+                "dhii/php-cs-fixer-config": "^0.1",
+                "dhii/stringable-interface": "^0.1",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\State\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "Abstract functionality for state machines.",
+            "time": "2018-05-15T09:04:58+00:00"
         },
         {
             "name": "dhii/time-interface",
@@ -1837,6 +2031,55 @@
             ],
             "description": "Interfaces for dealing with time.",
             "time": "2018-05-14T13:42:07+00:00"
+        },
+        {
+            "name": "dhii/type-interface",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/type-interface.git",
+                "reference": "d1a1e2e8e2b9649352379dc864615e64951796f5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/type-interface/zipball/d1a1e2e8e2b9649352379dc864615e64951796f5",
+                "reference": "d1a1e2e8e2b9649352379dc864615e64951796f5",
+                "shasum": ""
+            },
+            "require": {
+                "dhii/data-key-value-aware-interface": "^0.1",
+                "dhii/validation-interface": "^0.1 | ^0.2-alpha1",
+                "php": "^5.3 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/php-cs-fixer-config": "dev-php-5.3",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\Type\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "Interfaces for type interoperability",
+            "time": "2018-04-06T13:08:54+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -2615,6 +2858,56 @@
             "time": "2014-01-02T16:42:27+00:00"
         },
         {
+            "name": "rebelcode/booking-abstract",
+            "version": "v0.1-alpha1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RebelCode/booking-abstract.git",
+                "reference": "1db2fef27c4f32d3cc629179debd05cb059040e4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RebelCode/booking-abstract/zipball/1db2fef27c4f32d3cc629179debd05cb059040e4",
+                "reference": "1db2fef27c4f32d3cc629179debd05cb059040e4",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/php-cs-fixer-config": "^0.1",
+                "dhii/stringable-interface": "^0.1",
+                "dhii/time-interface": "^0.1-alpha1",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1",
+                "rebelcode/booking-interface": "^0.1-alpha1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "RebelCode\\Bookings\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "RebelCode",
+                    "email": "dev@rebelcode.com"
+                }
+            ],
+            "description": "Abstract functionality for bookings",
+            "time": "2018-05-14T14:32:52+00:00"
+        },
+        {
             "name": "rebelcode/booking-interface",
             "version": "v0.1-alpha1",
             "source": {
@@ -2666,6 +2959,65 @@
             "time": "2018-05-14T14:14:42+00:00"
         },
         {
+            "name": "rebelcode/booking-transitioner",
+            "version": "v0.1-alpha1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RebelCode/booking-transitioner.git",
+                "reference": "b039c072eedf7074ee435da5289a582f634ae581"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RebelCode/booking-transitioner/zipball/b039c072eedf7074ee435da5289a582f634ae581",
+                "reference": "b039c072eedf7074ee435da5289a582f634ae581",
+                "shasum": ""
+            },
+            "require": {
+                "dhii/exception-helper-base": "0.1-alpha1",
+                "dhii/factory-base": "^0.1-alpha3",
+                "dhii/i18n-helper-base": "^0.1",
+                "dhii/machine-state-machine-interface": "^0.1-alpha1",
+                "dhii/state-machine-abstract": "^0.1-alpha1",
+                "dhii/stringable-interface": "^0.1",
+                "php": "^5.4 | ^7.0",
+                "rebelcode/booking-abstract": "^0.1-alpha1",
+                "rebelcode/booking-interface": "^0.1-alpha1",
+                "rebelcode/booking-transitioner-interface": "^0.1-alpha1"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/cqrs-resource-model-interface": "0.1-alpha2",
+                "dhii/factory-interface": "0.1-alpha2",
+                "dhii/php-cs-fixer-config": "^0.1",
+                "phpunit/phpunit": "^4.8",
+                "psr/container": "^1.0",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "RebelCode\\Bookings\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "RebelCode",
+                    "email": "dev@rebelcode.com"
+                }
+            ],
+            "description": "Booking transitioner implementations.",
+            "time": "2018-05-15T09:38:49+00:00"
+        },
+        {
             "name": "rebelcode/booking-transitioner-interface",
             "version": "v0.1-alpha1",
             "source": {
@@ -2713,21 +3065,26 @@
         },
         {
             "name": "rebelcode/rcmod-eddbk-booking-logic",
-            "version": "v0.1-alpha1",
+            "version": "v0.1-alpha3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RebelCode/rcmod-eddbk-booking-logic.git",
-                "reference": "eb86cba0e1f9136f8187c24d2eb8461a271fc61a"
+                "reference": "1382fff39d99b666d3c2ab192bd6483fdb331b1e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RebelCode/rcmod-eddbk-booking-logic/zipball/eb86cba0e1f9136f8187c24d2eb8461a271fc61a",
-                "reference": "eb86cba0e1f9136f8187c24d2eb8461a271fc61a",
+                "url": "https://api.github.com/repos/RebelCode/rcmod-eddbk-booking-logic/zipball/1382fff39d99b666d3c2ab192bd6483fdb331b1e",
+                "reference": "1382fff39d99b666d3c2ab192bd6483fdb331b1e",
                 "shasum": ""
             },
             "require": {
+                "dhii/cqrs-resource-model-interface": "^0.1-alpha2",
+                "dhii/expression-interface": "^0.2-alpha1",
+                "dhii/factory-base": "^0.1-alpha3",
                 "dhii/validation-base": "^0.2-alpha2",
                 "php": "^5.4 | ^7.0",
+                "rebelcode/booking-interface": "^0.1-alpha1",
+                "rebelcode/booking-transitioner": "^0.1-alpha1",
                 "rebelcode/modular": "^0.1-alpha1"
             },
             "require-dev": {
@@ -2755,7 +3112,7 @@
                 }
             ],
             "description": "A RebelCode module for the booking logic in EDD Bookings.",
-            "time": "2018-05-21T15:14:41+00:00"
+            "time": "2018-05-24T18:11:23+00:00"
         },
         {
             "name": "satooshi/php-coveralls",
@@ -3193,7 +3550,7 @@
         },
         {
             "name": "symfony/config",
-            "version": "v2.8.40",
+            "version": "v2.8.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
@@ -3250,7 +3607,7 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.8.40",
+            "version": "v2.8.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
@@ -3311,7 +3668,7 @@
         },
         {
             "name": "symfony/debug",
-            "version": "v2.8.40",
+            "version": "v2.8.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
@@ -3368,7 +3725,7 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.8.40",
+            "version": "v2.8.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
@@ -3428,7 +3785,7 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.8.40",
+            "version": "v2.8.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
@@ -3478,7 +3835,7 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v2.8.40",
+            "version": "v2.8.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
@@ -3641,7 +3998,7 @@
         },
         {
             "name": "symfony/process",
-            "version": "v2.8.40",
+            "version": "v2.8.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
@@ -3690,7 +4047,7 @@
         },
         {
             "name": "symfony/stopwatch",
-            "version": "v2.8.40",
+            "version": "v2.8.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/stopwatch.git",
@@ -3739,7 +4096,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.8.40",
+            "version": "v2.8.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
