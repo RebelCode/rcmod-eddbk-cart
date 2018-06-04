@@ -18,6 +18,7 @@ use Dhii\Iterator\CountIterableCapableTrait;
 use Dhii\Iterator\ResolveIteratorCapableTrait;
 use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
+use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -50,6 +51,9 @@ class BookingPriceEvaluator implements EvaluableInterface
 
     /* @since [*next-version*] */
     use NormalizeContainerCapableTrait;
+
+    /* @since [*next-version*] */
+    use NormalizeIterableCapableTrait;
 
     /* @since [*next-version*] */
     use CreateContainerExceptionCapableTrait;
@@ -143,6 +147,7 @@ class BookingPriceEvaluator implements EvaluableInterface
 
         $service = reset($services);
         $lengths = $this->_containerGet($service, 'session_lengths');
+        $lengths = $this->_normalizeIterable($lengths);
 
         foreach ($lengths as $_lengthInfo) {
             $_length = $this->_normalizeInt($this->_containerGet($_lengthInfo, 'sessionLength'));
