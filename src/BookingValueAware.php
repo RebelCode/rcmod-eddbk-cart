@@ -40,6 +40,8 @@ class BookingValueAware implements ValueAwareInterface
      * {@inheritdoc}
      *
      * @since [*next-version*]
+     *
+     * @return BookingInterface
      */
     public function getValue()
     {
