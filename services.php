@@ -6,6 +6,7 @@ use RebelCode\EddBookings\Cart\BookingValueAwareFactory;
 use RebelCode\EddBookings\Cart\Module\AddBookingToCartHandler;
 use RebelCode\EddBookings\Cart\Module\FilterCartItemPriceHandler;
 use RebelCode\EddBookings\Cart\Module\RemoveBookingFromCartHandler;
+use RebelCode\EddBookings\Cart\Module\RenderCartBookingInfoHandler;
 use RebelCode\EddBookings\Cart\Module\SubmitBookingOnPaymentHandler;
 use RebelCode\EddBookings\Cart\Module\ValidateCartBookingHandler;
 
@@ -86,6 +87,19 @@ return [
             $c->get('bookings_select_rm'),
             $c->get('eddbk_booking_price_evaluator'),
             $c->get('eddbk_booking_value_aware_factory'),
+            $c->get('sql_expression_builder'),
+            $c->get('edd_cart_config/items')
+        );
+    },
+
+    /**
+     * The handler that renders booking information in the EDD cart.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_render_cart_booking_info_handler' => function (ContainerInterface $c) {
+        return new RenderCartBookingInfoHandler(
+            $c->get('bookings_select_rm'),
             $c->get('sql_expression_builder'),
             $c->get('edd_cart_config/items')
         );
