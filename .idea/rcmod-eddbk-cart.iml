@@ -21,7 +21,6 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/event-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/exception" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/exception-interface" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/expression-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/factory-base" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/factory-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/file-finder-abstract" />
@@ -33,12 +32,18 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/machine-state-machine-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/module-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/normalization-helper-base" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/output-renderer-abstract" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/output-renderer-base" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/output-renderer-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/php-cs-fixer-config" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/placeholder-template" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/placeholder-template-abstract" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/psr-14" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/regex-abstract" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/state-machine-abstract" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/stringable-helper-base" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/stringable-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/time-interface" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/type-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/validation-abstract" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/validation-base" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/validation-interface" />
