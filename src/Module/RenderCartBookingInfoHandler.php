@@ -179,13 +179,15 @@ class RenderCartBookingInfoHandler implements InvocableInterface
      */
     protected function _renderBookingInfo(BookingInterface $booking)
     {
+        $format = $this->_containerGet($this->cartItemConfig, 'booking_datetime_format');
+
         $startTs  = $booking->getStart();
         $startDt  = date(DATE_ATOM, $startTs);
-        $startStr = date('D, jS M Y, H:i', $startTs);
+        $startStr = date($format, $startTs);
 
         $endTs  = $booking->getEnd();
         $endDt  = date(DATE_ATOM, $endTs);
-        $endStr = date('D, jS M Y, H:i', $endTs);
+        $endStr = date($format, $endTs);
 
         $startLine = sprintf(
             '<b>%1$s</b> <time datetime="%2$s">%3$s</time>',
