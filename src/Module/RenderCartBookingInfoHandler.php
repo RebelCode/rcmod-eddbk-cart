@@ -189,17 +189,17 @@ class RenderCartBookingInfoHandler implements InvocableInterface
 
         $startLine = sprintf(
             '<b>%1$s</b> <time datetime="%2$s">%3$s</time>',
-            $this->__('Start:'),
+            $this->__('From:'),
             $startDt,
             $startStr
         );
         $endLine   = sprintf(
             '<b>%1$s</b> <time datetime="%2$s">%3$s</time>',
-            $this->__('End:'),
+            $this->__('Until:'),
             $endDt,
             $endStr
         );
 
-        return sprintf('<p>%1$s</p><p>%2$s</p>%3$s', $startLine, $endLine);
+        return sprintf('<hr/><p>%1$s</p><p>%2$s</p>', $startLine, $endLine);
     }
 }
