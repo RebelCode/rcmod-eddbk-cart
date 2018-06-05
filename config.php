@@ -40,6 +40,12 @@ return [
                  */
                 'booking_id_key' => 'booking_id',
             ],
+            /*
+             * The datetime format to use when rendering booking dates and times in the cart.
+             *
+             * @since [*next-version*]
+             */
+            'booking_datetime_format' => 'D, jS M Y, H:i',
         ],
     ],
 ];
