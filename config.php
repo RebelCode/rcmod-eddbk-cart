@@ -59,7 +59,7 @@ return [
                  * @since [*next-version*]
                  */
                 'booking_info' => [
-                    'file'          => 'booking-info.html',
+                    'file'          => 'cart-booking-info.html',
                     'token_start'   => '${',
                     'token_end'     => '}',
                     'token_default' => '',
