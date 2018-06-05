@@ -1,6 +1,8 @@
 <?php
 
 use Dhii\Output\PlaceholderTemplate;
+use Dhii\Output\PlaceholderTemplateFactory;
+use Dhii\Output\TemplateFactoryInterface;
 use Psr\Container\ContainerInterface;
 use RebelCode\EddBookings\Cart\BookingPriceEvaluator;
 use RebelCode\EddBookings\Cart\BookingValueAwareFactory;
@@ -108,21 +110,32 @@ return [
     },
 
     /*
+     * The factory used to create templates used in this module.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_cart_template_factory' => function (ContainerInterface $c) {
+        return new PlaceholderTemplateFactory(
+            'Dhii\Output\PlaceholderTemplate',
+            $c->get('eddbk_cart/templates/token_start'),
+            $c->get('eddbk_cart/templates/token_end'),
+            $c->get('eddbk_cart/templates/token_default')
+        );
+    },
+
+    /*
      * The template for booking info in the EDD cart.
      *
      * @since [*next-version*]
      */
     'eddbk_cart_booking_info_template' => function (ContainerInterface $c) {
-        $templateFile = $c->get('eddbk_cart/cart_items/templates/booking_info/file');
+        $templateFile = $c->get('eddbk_cart/cart_items/templates/booking_info');
         $templatePath = EDDBK_CART_MODULE_TEMPLATES_DIR . DIRECTORY_SEPARATOR . $templateFile;
         $template = file_get_contents($templatePath);
 
-        return new PlaceholderTemplate(
-            $template,
-            $c->get('eddbk_cart/cart_items/templates/booking_info/token_start'),
-            $c->get('eddbk_cart/cart_items/templates/booking_info/token_end'),
-            $c->get('eddbk_cart/cart_items/templates/booking_info/token_default')
-        );
+        return $c->get('eddbk_cart_template_factory')->make([
+            TemplateFactoryInterface::K_TEMPLATE => $template
+        ]);
     },
 
     /*

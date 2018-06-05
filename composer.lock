@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "87550af7194ab578d52da831219fb841",
+    "content-hash": "2fe16a9f8eab955f5a642cbb79a99c11",
     "packages": [
         {
             "name": "dhii/args-list-validation",

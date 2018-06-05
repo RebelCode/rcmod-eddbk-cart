@@ -58,13 +58,16 @@ return [
                  *
                  * @since [*next-version*]
                  */
-                'booking_info' => [
-                    'file'          => 'cart-booking-info.html',
-                    'token_start'   => '${',
-                    'token_end'     => '}',
-                    'token_default' => '',
-                ],
+                'booking_info' => 'cart-booking-info.html',
             ],
         ],
+        /*
+         * Configuration for placeholder templates.
+         */
+        'templates' => [
+            'token_start'   => '${',
+            'token_end'     => '}',
+            'token_default' => '',
+        ]
     ],
 ];
