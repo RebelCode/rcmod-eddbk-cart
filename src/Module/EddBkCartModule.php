@@ -84,5 +84,8 @@ class EddBkCartModule extends AbstractBaseModule
 
         // Attach the handler that filters cart item prices
         $this->_attach('edd_cart_item_price', $c->get('eddbk_filter_cart_item_price_handler'));
+
+        // Attach the handler that renders booking into in the EDD cart
+        $this->_attach('edd_checkout_cart_item_title_after', $c->get('eddbk_render_cart_booking_info_handler'));
     }
 }
