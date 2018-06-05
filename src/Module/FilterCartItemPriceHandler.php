@@ -142,7 +142,6 @@ class FilterCartItemPriceHandler implements InvocableInterface
         $this->bookingsSelectRm = $bookingsSelectRm;
         $this->exprBuilder      = $exprBuilder;
         $this->cartItemConfig   = $cartItemConfig;
-
     }
 
     /**
@@ -181,8 +180,6 @@ class FilterCartItemPriceHandler implements InvocableInterface
      * {@inheritdoc}
      *
      * @since [*next-version*]
-     *
-     * @return void
      */
     public function __invoke()
     {

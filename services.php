@@ -78,7 +78,7 @@ return [
         );
     },
 
-    /**
+    /*
      * The handler that filters cart item prices.
      *
      * @since [*next-version*]
@@ -93,7 +93,7 @@ return [
         );
     },
 
-    /**
+    /*
      * The handler that renders booking information in the EDD cart.
      *
      * @since [*next-version*]
@@ -107,7 +107,7 @@ return [
         );
     },
 
-    /**
+    /*
      * The template for booking info in the EDD cart.
      *
      * @since [*next-version*]
@@ -115,7 +115,7 @@ return [
     'eddbk_cart_booking_info_template' => function (ContainerInterface $c) {
         $templateFile = $c->get('eddbk_cart/cart_items/templates/booking_info/file');
         $templatePath = EDDBK_CART_MODULE_TEMPLATES_DIR . DIRECTORY_SEPARATOR . $templateFile;
-        $template     = file_get_contents($templatePath);
+        $template = file_get_contents($templatePath);
 
         return new PlaceholderTemplate(
             $template,
@@ -125,7 +125,7 @@ return [
         );
     },
 
-    /**
+    /*
      * The booking price evaluator.
      *
      * @since [*next-version*]
@@ -137,7 +137,7 @@ return [
         );
     },
 
-    /**
+    /*
      * The factory that creates booking value-aware instances.
      *
      * @since [*next-version*]

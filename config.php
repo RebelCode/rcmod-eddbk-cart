@@ -18,20 +18,20 @@ return [
              *
              * @since [*next-version*]
              */
-            'data'                    => [
-                /**
+            'data' => [
+                /*
                  * The EDD key where cart item data is stored for cart items.
                  *
                  * @since [*next-version*]
                  */
-                'key'            => 'options',
+                'key' => 'options',
 
                 /*
                  * The main key used in cart item data by EDD Bookings.
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_key'      => 'eddbk',
+                'eddbk_key' => 'eddbk',
 
                 /*
                  * The key used in cart item data to store the booking ID.
@@ -52,7 +52,7 @@ return [
              *
              * @since [*next-version*]
              */
-            'templates'               => [
+            'templates' => [
                 /*
                  * The template for booking info in the cart.
                  *
