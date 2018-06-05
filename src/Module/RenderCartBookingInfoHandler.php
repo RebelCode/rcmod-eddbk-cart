@@ -16,6 +16,8 @@ use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Iterator\CountIterableCapableTrait;
 use Dhii\Iterator\ResolveIteratorCapableTrait;
+use Dhii\Output\TemplateAwareTrait;
+use Dhii\Output\TemplateInterface;
 use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
@@ -33,6 +35,9 @@ use stdClass;
  */
 class RenderCartBookingInfoHandler implements InvocableInterface
 {
+    /* @since [*next-version*] */
+    use TemplateAwareTrait;
+
     /* @since [*next-version*] */
     use ContainerGetPathCapableTrait;
 
@@ -107,15 +112,18 @@ class RenderCartBookingInfoHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
+     * @param TemplateInterface                             $template         The template to use to render the info.
      * @param SelectCapableInterface                        $bookingsSelectRm The bookings SELECT resource model.
      * @param object                                        $exprBuilder      The expression builder.
      * @param array|stdClass|ArrayAccess|ContainerInterface $cartItemConfig   The cart item data config.
      */
     public function __construct(
+        TemplateInterface $template,
         SelectCapableInterface $bookingsSelectRm,
         $exprBuilder,
         $cartItemConfig
     ) {
+        $this->_setTemplate($template);
         $this->bookingsSelectRm = $bookingsSelectRm;
         $this->exprBuilder      = $exprBuilder;
         $this->cartItemConfig   = $cartItemConfig;
@@ -189,19 +197,13 @@ class RenderCartBookingInfoHandler implements InvocableInterface
         $endDt  = date(DATE_ATOM, $endTs);
         $endStr = date($format, $endTs);
 
-        $startLine = sprintf(
-            '<b>%1$s</b> <time datetime="%2$s">%3$s</time>',
-            $this->__('From:'),
-            $startDt,
-            $startStr
-        );
-        $endLine   = sprintf(
-            '<b>%1$s</b> <time datetime="%2$s">%3$s</time>',
-            $this->__('Until:'),
-            $endDt,
-            $endStr
-        );
-
-        return sprintf('<hr/><p>%1$s</p><p>%2$s</p>', $startLine, $endLine);
+        return $this->_getTemplate()->render([
+            'from_label'     => $this->__('From:'),
+            'until_label'    => $this->__('Until:'),
+            'start_datetime' => $startDt,
+            'end_datetime'   => $endDt,
+            'start_text'     => $startStr,
+            'end_text'       => $endStr,
+        ]);
     }
 }

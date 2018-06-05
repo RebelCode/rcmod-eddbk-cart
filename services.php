@@ -1,5 +1,6 @@
 <?php
 
+use Dhii\Output\PlaceholderTemplate;
 use Psr\Container\ContainerInterface;
 use RebelCode\EddBookings\Cart\BookingPriceEvaluator;
 use RebelCode\EddBookings\Cart\BookingValueAwareFactory;
@@ -99,9 +100,28 @@ return [
      */
     'eddbk_render_cart_booking_info_handler' => function (ContainerInterface $c) {
         return new RenderCartBookingInfoHandler(
+            $c->get('eddbk_cart_booking_info_template'),
             $c->get('bookings_select_rm'),
             $c->get('sql_expression_builder'),
             $c->get('eddbk_cart/cart_items')
+        );
+    },
+
+    /**
+     * The template for booking info in the EDD cart.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_cart_booking_info_template' => function (ContainerInterface $c) {
+        $templateFile = $c->get('eddbk_cart/cart_items/templates/booking_info/file');
+        $templatePath = EDDBK_CART_MODULE_TEMPLATES_DIR . DIRECTORY_SEPARATOR . $templateFile;
+        $template     = file_get_contents($templatePath);
+
+        return new PlaceholderTemplate(
+            $template,
+            $c->get('eddbk_cart/cart_items/templates/booking_info/token_start'),
+            $c->get('eddbk_cart/cart_items/templates/booking_info/token_end'),
+            $c->get('eddbk_cart/cart_items/templates/booking_info/token_default')
         );
     },
 

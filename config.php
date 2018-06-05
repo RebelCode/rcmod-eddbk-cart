@@ -46,6 +46,25 @@ return [
              * @since [*next-version*]
              */
             'booking_datetime_format' => 'D, jS M Y, H:i',
+
+            /*
+             * Templates used in the cart.
+             *
+             * @since [*next-version*]
+             */
+            'templates'               => [
+                /*
+                 * The template for booking info in the cart.
+                 *
+                 * @since [*next-version*]
+                 */
+                'booking_info' => [
+                    'file'          => 'booking-info.html',
+                    'token_start'   => '${',
+                    'token_end'     => '}',
+                    'token_default' => '',
+                ],
+            ],
         ],
     ],
 ];
