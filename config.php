@@ -2,23 +2,23 @@
 
 return [
     /*
-     * Config for the EDD cart.
+     * Config for the EDDBK cart module.
      *
      * @since [*next-version*]
      */
-    'edd_cart_config' => [
+    'eddbk_cart' => [
         /*
          * Config for cart items.
          *
          * @since [*next-version*]
          */
-        'items' => [
+        'cart_items' => [
             /*
              * Config the cart item data.
              *
              * @since [*next-version*]
              */
-            'data' => [
+            'data'                    => [
                 /**
                  * The EDD key where cart item data is stored for cart items.
                  *

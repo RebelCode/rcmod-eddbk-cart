@@ -28,7 +28,7 @@ return [
     'eddbk_add_booking_to_cart_handler' => function (ContainerInterface $c) {
         return new AddBookingToCartHandler(
             $c->get('edd_cart'),
-            $c->get('edd_cart_config/items')
+            $c->get('eddbk_cart/cart_items')
         );
     },
 
@@ -43,7 +43,7 @@ return [
             $c->get('bookings_select_rm'),
             $c->get('bookings_delete_rm'),
             $c->get('sql_expression_builder'),
-            $c->get('edd_cart_config/items')
+            $c->get('eddbk_cart/cart_items')
         );
     },
 
@@ -58,7 +58,7 @@ return [
             $c->get('bookings_select_rm'),
             $c->get('bookings_update_rm'),
             $c->get('sql_expression_builder'),
-            $c->get('edd_cart_config/items')
+            $c->get('eddbk_cart/cart_items')
         );
     },
 
@@ -73,7 +73,7 @@ return [
             $c->get('booking_transitioner'),
             $c->get('bookings_select_rm'),
             $c->get('sql_expression_builder'),
-            $c->get('edd_cart_config/items')
+            $c->get('eddbk_cart/cart_items')
         );
     },
 
@@ -88,7 +88,7 @@ return [
             $c->get('eddbk_booking_price_evaluator'),
             $c->get('eddbk_booking_value_aware_factory'),
             $c->get('sql_expression_builder'),
-            $c->get('edd_cart_config/items')
+            $c->get('eddbk_cart/cart_items')
         );
     },
 
@@ -101,7 +101,7 @@ return [
         return new RenderCartBookingInfoHandler(
             $c->get('bookings_select_rm'),
             $c->get('sql_expression_builder'),
-            $c->get('edd_cart_config/items')
+            $c->get('eddbk_cart/cart_items')
         );
     },
 
