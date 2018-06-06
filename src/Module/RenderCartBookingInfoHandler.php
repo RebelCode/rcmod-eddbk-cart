@@ -7,41 +7,36 @@ use Dhii\Data\Container\ContainerGetCapableTrait;
 use Dhii\Data\Container\ContainerGetPathCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
+use Dhii\Data\Container\Exception\NotFoundExceptionInterface;
+use Dhii\Data\Container\NormalizeContainerCapableTrait;
 use Dhii\Data\Container\NormalizeKeyCapableTrait;
-use Dhii\Evaluable\EvaluableInterface;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
-use Dhii\Factory\FactoryAwareTrait;
-use Dhii\Factory\FactoryInterface;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Iterator\CountIterableCapableTrait;
 use Dhii\Iterator\ResolveIteratorCapableTrait;
+use Dhii\Output\TemplateAwareTrait;
+use Dhii\Output\TemplateInterface;
 use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
-use Exception;
-use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventManager\EventInterface;
 use RebelCode\Bookings\BookingInterface;
 use stdClass;
 
 /**
- * The handler that filters a cart item's price to the matching booking session length price, if it is a cart booking.
+ * The handler for rendering booking info in the EDD cart, for cart items that correspond to bookings.
  *
  * @since [*next-version*]
  */
-class FilterCartItemPriceHandler implements InvocableInterface
+class RenderCartBookingInfoHandler implements InvocableInterface
 {
     /* @since [*next-version*] */
-    use FactoryAwareTrait {
-        _getFactory as _getBookingValueAwareFactory;
-        _setFactory as _setBookingValueAwareFactory;
-    }
+    use TemplateAwareTrait;
 
     /* @since [*next-version*] */
     use ContainerGetPathCapableTrait;
@@ -50,10 +45,13 @@ class FilterCartItemPriceHandler implements InvocableInterface
     use ContainerGetCapableTrait;
 
     /* @since [*next-version*] */
-    use NormalizeKeyCapableTrait;
+    use CountIterableCapableTrait;
 
     /* @since [*next-version*] */
     use NormalizeIntCapableTrait;
+
+    /* @since [*next-version*] */
+    use NormalizeKeyCapableTrait;
 
     /* @since [*next-version*] */
     use NormalizeStringCapableTrait;
@@ -62,7 +60,7 @@ class FilterCartItemPriceHandler implements InvocableInterface
     use NormalizeIterableCapableTrait;
 
     /* @since [*next-version*] */
-    use CountIterableCapableTrait;
+    use NormalizeContainerCapableTrait;
 
     /* @since [*next-version*] */
     use ResolveIteratorCapableTrait;
@@ -92,13 +90,13 @@ class FilterCartItemPriceHandler implements InvocableInterface
     protected $bookingsSelectRm;
 
     /**
-     * The evaluable instance that evaluates a booking's price.
+     * The expression builder.
      *
      * @since [*next-version*]
      *
-     * @var EvaluableInterface|null
+     * @var object
      */
-    protected $priceEvaluator;
+    protected $exprBuilder;
 
     /**
      * The cart item data config.
@@ -110,70 +108,25 @@ class FilterCartItemPriceHandler implements InvocableInterface
     protected $cartItemConfig;
 
     /**
-     * The expression builder.
-     *
-     * @since [*next-version*]
-     *
-     * @var object
-     */
-    protected $exprBuilder;
-
-    /**
      * Constructor.
      *
      * @since [*next-version*]
      *
-     * @param SelectCapableInterface                        $bookingsSelectRm  The bookings SELECT resource model.
-     * @param EvaluableInterface|null                       $priceEvaluator    The booking price evaluator.
-     * @param FactoryInterface                              $valueAwareFactory The value aware factory.
-     * @param object                                        $exprBuilder       The expression builder.
-     * @param array|ArrayAccess|ContainerInterface|stdClass $cartItemConfig    The cart item configuration.
+     * @param TemplateInterface                             $template         The template to use to render the info.
+     * @param SelectCapableInterface                        $bookingsSelectRm The bookings SELECT resource model.
+     * @param object                                        $exprBuilder      The expression builder.
+     * @param array|stdClass|ArrayAccess|ContainerInterface $cartItemConfig   The cart item data config.
      */
     public function __construct(
+        TemplateInterface $template,
         SelectCapableInterface $bookingsSelectRm,
-        EvaluableInterface $priceEvaluator,
-        FactoryInterface $valueAwareFactory,
         $exprBuilder,
         $cartItemConfig
     ) {
-        $this->_setPriceEvaluator($priceEvaluator);
-        $this->_setBookingValueAwareFactory($valueAwareFactory);
-
+        $this->_setTemplate($template);
         $this->bookingsSelectRm = $bookingsSelectRm;
         $this->exprBuilder      = $exprBuilder;
         $this->cartItemConfig   = $cartItemConfig;
-    }
-
-    /**
-     * Retrieves the booking price evaluator.
-     *
-     * @since [*next-version*]
-     *
-     * @return EvaluableInterface|null The price evaluator instance, if any.
-     */
-    protected function _getPriceEvaluator()
-    {
-        return $this->priceEvaluator;
-    }
-
-    /**
-     * Sets the booking price evaluator.
-     *
-     * @since [*next-version*]
-     *
-     * @param EvaluableInterface|null $priceEvaluator The price evaluator instance, if any.
-     *
-     * @throws InvalidArgumentException If the argument is not an evaluable instance.
-     */
-    protected function _setPriceEvaluator($priceEvaluator)
-    {
-        if ($priceEvaluator !== null && !($priceEvaluator instanceof EvaluableInterface)) {
-            throw $this->_createInvalidArgumentException(
-                $this->__('Argument is not an evaluable instance'), null, null, $priceEvaluator
-            );
-        }
-
-        $this->priceEvaluator = $priceEvaluator;
     }
 
     /**
@@ -191,15 +144,18 @@ class FilterCartItemPriceHandler implements InvocableInterface
             );
         }
 
-        $options = $event->getParam(2);
+        $item = $event->getParam(0);
+        $item = $this->_normalizeContainer($item);
 
+        $dataKey       = $this->_containerGetPath($this->cartItemConfig, ['data', 'key']);
         $eddBkKey      = $this->_containerGetPath($this->cartItemConfig, ['data', 'eddbk_key']);
         $bookingIdKey  = $this->_containerGetPath($this->cartItemConfig, ['data', 'booking_id_key']);
-        $bookingIdPath = [$eddBkKey, $bookingIdKey];
+        $bookingIdPath = [$dataKey, $eddBkKey, $bookingIdKey];
 
         try {
-            $bookingId = $this->_containerGetPath($options, $bookingIdPath);
+            $bookingId = $this->_containerGetPath($item, $bookingIdPath);
         } catch (NotFoundExceptionInterface $exception) {
+            // Cart item does not have a booking ID, and thus does not correspond to a booking.
             return;
         }
 
@@ -213,31 +169,41 @@ class FilterCartItemPriceHandler implements InvocableInterface
         if ($this->_countIterable($bookings) !== 1) {
             return;
         }
+
         // Get the booking
         $booking = reset($bookings);
 
-        try {
-            $price = $this->_evaluateBookingPrice($booking);
-        } catch (Exception $exception) {
-            return;
-        }
-
-        $event->setParams([0 => $price] + $event->getParams());
+        echo $this->_renderBookingInfo($booking);
     }
 
     /**
-     * Evaluates the price of the given booking.
+     * Renders the information for a booking.
      *
      * @since [*next-version*]
      *
-     * @param BookingInterface $booking The booking instance.
+     * @param BookingInterface $booking The booking.
      *
-     * @return int|float|string|Stringable The booking price.
+     * @return string|Stringable The render result.
      */
-    protected function _evaluateBookingPrice(BookingInterface $booking)
+    protected function _renderBookingInfo(BookingInterface $booking)
     {
-        return $this->_getPriceEvaluator()->evaluate(
-            $this->_getBookingValueAwareFactory()->make(['booking' => $booking])
-        );
+        $format = $this->_containerGet($this->cartItemConfig, 'booking_datetime_format');
+
+        $startTs  = $booking->getStart();
+        $startDt  = date(DATE_ATOM, $startTs);
+        $startStr = date($format, $startTs);
+
+        $endTs  = $booking->getEnd();
+        $endDt  = date(DATE_ATOM, $endTs);
+        $endStr = date($format, $endTs);
+
+        return $this->_getTemplate()->render([
+            'from_label'     => $this->__('From:'),
+            'until_label'    => $this->__('Until:'),
+            'start_datetime' => $startDt,
+            'end_datetime'   => $endDt,
+            'start_text'     => $startStr,
+            'end_text'       => $endStr,
+        ]);
     }
 }

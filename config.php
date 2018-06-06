@@ -2,36 +2,36 @@
 
 return [
     /*
-     * Config for the EDD cart.
+     * Config for the EDDBK cart module.
      *
      * @since [*next-version*]
      */
-    'edd_cart_config' => [
+    'eddbk_cart' => [
         /*
          * Config for cart items.
          *
          * @since [*next-version*]
          */
-        'items' => [
+        'cart_items' => [
             /*
              * Config the cart item data.
              *
              * @since [*next-version*]
              */
             'data' => [
-                /**
+                /*
                  * The EDD key where cart item data is stored for cart items.
                  *
                  * @since [*next-version*]
                  */
-                'key'            => 'options',
+                'key' => 'options',
 
                 /*
                  * The main key used in cart item data by EDD Bookings.
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_key'      => 'eddbk',
+                'eddbk_key' => 'eddbk',
 
                 /*
                  * The key used in cart item data to store the booking ID.
@@ -40,6 +40,34 @@ return [
                  */
                 'booking_id_key' => 'booking_id',
             ],
+            /*
+             * The datetime format to use when rendering booking dates and times in the cart.
+             *
+             * @since [*next-version*]
+             */
+            'booking_datetime_format' => 'D, jS M Y, H:i',
+
+            /*
+             * Templates used in the cart.
+             *
+             * @since [*next-version*]
+             */
+            'templates' => [
+                /*
+                 * The template for booking info in the cart.
+                 *
+                 * @since [*next-version*]
+                 */
+                'booking_info' => 'cart-booking-info.html',
+            ],
         ],
+        /*
+         * Configuration for placeholder templates.
+         */
+        'templates' => [
+            'token_start'   => '${',
+            'token_end'     => '}',
+            'token_default' => '',
+        ]
     ],
 ];

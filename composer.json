@@ -13,7 +13,9 @@
     "prefer-stable": true,
     "require": {
         "php": "^5.4 | ^7.0",
-        "rebelcode/modular": "^0.1-alpha1"
+        "rebelcode/modular": "^0.1-alpha1",
+        "dhii/evaluable-interface": "^0.1-alpha1",
+        "dhii/placeholder-template": "^0.1-alpha2"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8",
@@ -23,8 +25,7 @@
         "rebelcode/rcmod-eddbk-booking-logic": "^0.1-alpha1",
         "rebelcode/booking-interface": "^0.1-alpha1",
         "rebelcode/booking-transitioner-interface": "^0.1-alpha1",
-        "dhii/cqrs-resource-model-interface": "^0.1-alpha2",
-        "dhii/evaluable-interface": "^0.1-alpha1"
+        "dhii/cqrs-resource-model-interface": "^0.1-alpha2"
     },
     "autoload": {
         "psr-4": {

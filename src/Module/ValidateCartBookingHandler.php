@@ -214,7 +214,7 @@ class ValidateCartBookingHandler implements InvocableInterface
     protected function _getBookingValidationErrors(ValidationFailedExceptionInterface $exception)
     {
         return [
-            'eddbk_unavailable_booking' => $this->__('This booking is not available. Please contact the site administrator for more details')
+            'eddbk_unavailable_booking' => $this->__('This booking is not available. Please contact the site administrator for more details'),
         ];
     }
 

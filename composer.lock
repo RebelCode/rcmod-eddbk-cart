@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b30a6bf68b69fca9e5e89770b3615d52",
+    "content-hash": "2fe16a9f8eab955f5a642cbb79a99c11",
     "packages": [
         {
             "name": "dhii/args-list-validation",
@@ -504,6 +504,49 @@
             ],
             "description": "Interfaces that aim to increase interoperability of value objects",
             "time": "2017-01-21T17:35:30+00:00"
+        },
+        {
+            "name": "dhii/evaluable-interface",
+            "version": "v0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/evaluable-interface.git",
+                "reference": "da21c1a22cf0e49d5b05e93937928887657e49ed"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/evaluable-interface/zipball/da21c1a22cf0e49d5b05e93937928887657e49ed",
+                "reference": "da21c1a22cf0e49d5b05e93937928887657e49ed",
+                "shasum": ""
+            },
+            "require": {
+                "dhii/data-key-value-aware-interface": "^0.1",
+                "php": "^5.3.9 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/php-cs-fixer-config": "dev-php-5.3",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\Evaluable\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "Increasing interoperability for objects that can be evaluated",
+            "time": "2017-01-21T18:30:17+00:00"
         },
         {
             "name": "dhii/event-interface",
@@ -1105,16 +1148,16 @@
         },
         {
             "name": "dhii/normalization-helper-base",
-            "version": "v0.1-alpha2",
+            "version": "v0.1-alpha4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Dhii/normalization-helper-base.git",
-                "reference": "ecbd44dc80533ec93a8cac1fb8f36ba3697f9798"
+                "reference": "1b64f0ea6b3e32f9478f854f6049500795b51da7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Dhii/normalization-helper-base/zipball/ecbd44dc80533ec93a8cac1fb8f36ba3697f9798",
-                "reference": "ecbd44dc80533ec93a8cac1fb8f36ba3697f9798",
+                "url": "https://api.github.com/repos/Dhii/normalization-helper-base/zipball/1b64f0ea6b3e32f9478f854f6049500795b51da7",
+                "reference": "1b64f0ea6b3e32f9478f854f6049500795b51da7",
                 "shasum": ""
             },
             "require": {
@@ -1149,7 +1192,285 @@
                 }
             ],
             "description": "Functionality for normalizing values.",
-            "time": "2018-02-12T09:41:29+00:00"
+            "time": "2018-06-04T08:55:31+00:00"
+        },
+        {
+            "name": "dhii/output-renderer-abstract",
+            "version": "v0.1-alpha2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/output-renderer-abstract.git",
+                "reference": "0f6e5eed940025332dd1986d6c771e10f7197b1a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/output-renderer-abstract/zipball/0f6e5eed940025332dd1986d6c771e10f7197b1a",
+                "reference": "0f6e5eed940025332dd1986d6c771e10f7197b1a",
+                "shasum": ""
+            },
+            "require": {
+                "dhii/output-renderer-interface": "^0.2 | ^0.3",
+                "php": "^5.4 | ^7.0",
+                "psr/container": "^1.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/exception-interface": "^0.2-alpha3",
+                "dhii/invocable-interface": "^0.1-alpha1",
+                "dhii/php-cs-fixer-config": "^0.1",
+                "dhii/validation-interface": "^0.1 | ^0.2-alpha1",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "suggest": {
+                "dhii/container-helper-base": "For normalizing context containers"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\Output\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "Common abstract functionality for output renderers.",
+            "time": "2018-05-10T12:31:09+00:00"
+        },
+        {
+            "name": "dhii/output-renderer-base",
+            "version": "v0.1-alpha1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/output-renderer-base.git",
+                "reference": "700483a37016e502be2ead9580bb9258ad8bf17b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/output-renderer-base/zipball/700483a37016e502be2ead9580bb9258ad8bf17b",
+                "reference": "700483a37016e502be2ead9580bb9258ad8bf17b",
+                "shasum": ""
+            },
+            "require": {
+                "dhii/container-helper-base": "^0.1-alpha5",
+                "dhii/exception": "^0.1-alpha4",
+                "dhii/i18n-helper-base": "^0.1-alpha1",
+                "dhii/output-renderer-abstract": "^0.1-alpha1",
+                "dhii/output-renderer-interface": "^0.2 | ^0.3-alpha1",
+                "php": "^5.4 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/php-cs-fixer-config": "^0.1",
+                "dhii/stringable-interface": "^0.1",
+                "phpunit/phpunit": "^4.8",
+                "psr/container": "^1.0",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\Output\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "Base concrete functionality for output rendering.",
+            "time": "2018-04-05T13:32:07+00:00"
+        },
+        {
+            "name": "dhii/output-renderer-interface",
+            "version": "v0.3-alpha2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/output-renderer-interface.git",
+                "reference": "de48ea589e5e1caa1191f588a3aea7623ccbaf44"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/output-renderer-interface/zipball/de48ea589e5e1caa1191f588a3aea7623ccbaf44",
+                "reference": "de48ea589e5e1caa1191f588a3aea7623ccbaf44",
+                "shasum": ""
+            },
+            "require": {
+                "dhii/exception-interface": "^0.1 | ^0.2",
+                "dhii/factory-interface": "^0.1-alpha2",
+                "dhii/stringable-interface": "^0.1",
+                "php": "^5.3 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "dev-master",
+                "dhii/php-cs-fixer-config": "dev-php-5.3",
+                "phpunit/phpunit": "4.*",
+                "psr/container": "^1.0",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "suggest": {
+                "dhii/container-helper-base": "Useful for reading data from different context types uniformly"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\Output\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "An interface for objects that can perform rendering.",
+            "time": "2018-06-02T18:49:35+00:00"
+        },
+        {
+            "name": "dhii/placeholder-template",
+            "version": "v0.1-alpha2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/placeholder-template.git",
+                "reference": "ab6eb2f98b085dfdf22cf86fd243cd7e6ee68525"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/placeholder-template/zipball/ab6eb2f98b085dfdf22cf86fd243cd7e6ee68525",
+                "reference": "ab6eb2f98b085dfdf22cf86fd243cd7e6ee68525",
+                "shasum": ""
+            },
+            "require": {
+                "dhii/container-helper-base": "^0.1-alpha5",
+                "dhii/data-container-base": "^0.1-alpha1",
+                "dhii/exception": "^0.1-alpha4",
+                "dhii/factory-base": "^0.1-alpha2",
+                "dhii/i18n-helper-base": "^0.1-alpha1",
+                "dhii/normalization-helper-base": "^0.1-alpha3",
+                "dhii/output-renderer-base": "^0.1-alpha1",
+                "dhii/placeholder-template-abstract": "^0.1-alpha5",
+                "dhii/regex-abstract": "^0.1-alpha1",
+                "dhii/stringable-helper-base": "^0.1-alpha2",
+                "php": "^5.4 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/output-renderer-interface": "^0.3-alpha2",
+                "dhii/php-cs-fixer-config": "^0.1",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\Output\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "A template implementation that replaces placeholders in text",
+            "time": "2018-06-04T15:39:18+00:00"
+        },
+        {
+            "name": "dhii/placeholder-template-abstract",
+            "version": "v0.1-alpha5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/placeholder-template-abstract.git",
+                "reference": "bfa7cea3b1e078b19bcf59d9a3da63b8c12ed03b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/placeholder-template-abstract/zipball/bfa7cea3b1e078b19bcf59d9a3da63b8c12ed03b",
+                "reference": "bfa7cea3b1e078b19bcf59d9a3da63b8c12ed03b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/php-cs-fixer-config": "^0.1",
+                "dhii/stringable-interface": "^0.1",
+                "phpunit/phpunit": "^4.8",
+                "psr/container": "^1.0",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "suggest": {
+                "dhii/container-helper-base": "For standardized container retrieval",
+                "dhii/exception": "For exceptions and exception factories",
+                "dhii/i18n-helper-base": "For internationalization functionality",
+                "dhii/normalization-helper-base": "For normalization of strings and other simple types",
+                "dhii/regex-abstract": "For RegEx functionality, such as quoting and matching",
+                "dhii/stringable-helper-base": "For string replacement functionality"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\Output\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "Abstract functionality for working with templates that use placeholders.",
+            "time": "2018-06-04T15:21:46+00:00"
         },
         {
             "name": "dhii/psr-14",
@@ -1184,6 +1505,105 @@
             ],
             "description": "A temporary PSR-14 repository.",
             "time": "2016-07-06T18:43:19+00:00"
+        },
+        {
+            "name": "dhii/regex-abstract",
+            "version": "v0.1-alpha1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/regex-abstract.git",
+                "reference": "0751f9c91a6f86d5f901b6b7f3613dc80bb69a8a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/regex-abstract/zipball/0751f9c91a6f86d5f901b6b7f3613dc80bb69a8a",
+                "reference": "0751f9c91a6f86d5f901b6b7f3613dc80bb69a8a",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/php-cs-fixer-config": "^0.1",
+                "dhii/stringable-interface": "^0.1",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\Regex\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "Abstract functionality for working with regular expressions",
+            "time": "2018-06-02T16:08:45+00:00"
+        },
+        {
+            "name": "dhii/stringable-helper-base",
+            "version": "v0.1-alpha2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/stringable-helper-base.git",
+                "reference": "904254409800710665135a751659b59d140a2b40"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/stringable-helper-base/zipball/904254409800710665135a751659b59d140a2b40",
+                "reference": "904254409800710665135a751659b59d140a2b40",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/php-cs-fixer-config": "^0.1",
+                "dhii/stringable-interface": "^0.1",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "suggest": {
+                "dhii/normalization-helper-base": "For using iterables instead of arrays, and stringables instead of strings"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\Util\\String\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "Helper functionality for working with stringables.",
+            "time": "2018-06-02T15:52:14+00:00"
         },
         {
             "name": "dhii/stringable-interface",
@@ -1756,100 +2176,6 @@
             "time": "2017-03-07T16:25:09+00:00"
         },
         {
-            "name": "dhii/evaluable-interface",
-            "version": "v0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Dhii/evaluable-interface.git",
-                "reference": "da21c1a22cf0e49d5b05e93937928887657e49ed"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Dhii/evaluable-interface/zipball/da21c1a22cf0e49d5b05e93937928887657e49ed",
-                "reference": "da21c1a22cf0e49d5b05e93937928887657e49ed",
-                "shasum": ""
-            },
-            "require": {
-                "dhii/data-key-value-aware-interface": "^0.1",
-                "php": "^5.3.9 | ^7.0"
-            },
-            "require-dev": {
-                "codeclimate/php-test-reporter": "<=0.3.2",
-                "dhii/php-cs-fixer-config": "dev-php-5.3",
-                "phpunit/phpunit": "^4.8",
-                "ptrofimov/xpmock": "^1.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Dhii\\Evaluable\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Dhii Team",
-                    "email": "development@dhii.co"
-                }
-            ],
-            "description": "Increasing interoperability for objects that can be evaluated",
-            "time": "2017-01-21T18:30:17+00:00"
-        },
-        {
-            "name": "dhii/expression-interface",
-            "version": "dev-develop",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Dhii/expression-interface.git",
-                "reference": "ba61f3265c13a73e5275b361eb343dc6e81c09be"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Dhii/expression-interface/zipball/ba61f3265c13a73e5275b361eb343dc6e81c09be",
-                "reference": "ba61f3265c13a73e5275b361eb343dc6e81c09be",
-                "shasum": ""
-            },
-            "require": {
-                "dhii/data-key-value-aware-interface": "^0.1",
-                "dhii/evaluable-interface": "^0.1",
-                "dhii/type-interface": "^0.1",
-                "php": "^5.3 | ^7.0"
-            },
-            "require-dev": {
-                "codeclimate/php-test-reporter": "<=0.3.2",
-                "dhii/php-cs-fixer-config": "dev-php-5.3",
-                "dhii/stringable-interface": "^0.1",
-                "phpunit/phpunit": "^4.8",
-                "ptrofimov/xpmock": "^1.1"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Dhii\\Expression\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Dhii Team",
-                    "email": "development@dhii.co"
-                }
-            ],
-            "description": "Interoperable interfaces for representing expressions.",
-            "time": "2018-01-13T14:56:39+00:00"
-        },
-        {
             "name": "dhii/machine-state-machine-interface",
             "version": "v0.1-alpha1",
             "source": {
@@ -2031,55 +2357,6 @@
             ],
             "description": "Interfaces for dealing with time.",
             "time": "2018-05-14T13:42:07+00:00"
-        },
-        {
-            "name": "dhii/type-interface",
-            "version": "dev-develop",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Dhii/type-interface.git",
-                "reference": "d1a1e2e8e2b9649352379dc864615e64951796f5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Dhii/type-interface/zipball/d1a1e2e8e2b9649352379dc864615e64951796f5",
-                "reference": "d1a1e2e8e2b9649352379dc864615e64951796f5",
-                "shasum": ""
-            },
-            "require": {
-                "dhii/data-key-value-aware-interface": "^0.1",
-                "dhii/validation-interface": "^0.1 | ^0.2-alpha1",
-                "php": "^5.3 | ^7.0"
-            },
-            "require-dev": {
-                "codeclimate/php-test-reporter": "<=0.3.2",
-                "dhii/php-cs-fixer-config": "dev-php-5.3",
-                "phpunit/phpunit": "^4.8",
-                "ptrofimov/xpmock": "^1.1"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Dhii\\Type\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Dhii Team",
-                    "email": "development@dhii.co"
-                }
-            ],
-            "description": "Interfaces for type interoperability",
-            "time": "2018-04-06T13:08:54+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -3065,35 +3342,36 @@
         },
         {
             "name": "rebelcode/rcmod-eddbk-booking-logic",
-            "version": "v0.1-alpha3",
+            "version": "v0.1-alpha4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RebelCode/rcmod-eddbk-booking-logic.git",
-                "reference": "1382fff39d99b666d3c2ab192bd6483fdb331b1e"
+                "reference": "edb095b2c1af22255e72184ce0daa940153f36f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RebelCode/rcmod-eddbk-booking-logic/zipball/1382fff39d99b666d3c2ab192bd6483fdb331b1e",
-                "reference": "1382fff39d99b666d3c2ab192bd6483fdb331b1e",
+                "url": "https://api.github.com/repos/RebelCode/rcmod-eddbk-booking-logic/zipball/edb095b2c1af22255e72184ce0daa940153f36f4",
+                "reference": "edb095b2c1af22255e72184ce0daa940153f36f4",
                 "shasum": ""
             },
             "require": {
-                "dhii/cqrs-resource-model-interface": "^0.1-alpha2",
-                "dhii/expression-interface": "^0.2-alpha1",
                 "dhii/factory-base": "^0.1-alpha3",
                 "dhii/validation-base": "^0.2-alpha2",
                 "php": "^5.4 | ^7.0",
-                "rebelcode/booking-interface": "^0.1-alpha1",
                 "rebelcode/booking-transitioner": "^0.1-alpha1",
                 "rebelcode/modular": "^0.1-alpha1"
             },
             "require-dev": {
                 "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/cqrs-resource-model-interface": "^0.1-alpha2",
+                "dhii/expression-interface": "^0.2-alpha1",
                 "dhii/output-renderer-interface": "^0.3",
                 "dhii/php-cs-fixer-config": "^0.1",
+                "dhii/transition-event-interface": "^0.1-alpha",
                 "johnpbloch/wordpress-core": "^4.0",
                 "phpunit/phpunit": "^4.8",
-                "ptrofimov/xpmock": "^1.1"
+                "ptrofimov/xpmock": "^1.1",
+                "rebelcode/booking-interface": "^0.1-alpha1"
             },
             "type": "rc-module",
             "autoload": {
@@ -3112,7 +3390,7 @@
                 }
             ],
             "description": "A RebelCode module for the booking logic in EDD Bookings.",
-            "time": "2018-05-24T18:11:23+00:00"
+            "time": "2018-06-04T16:47:38+00:00"
         },
         {
             "name": "satooshi/php-coveralls",
