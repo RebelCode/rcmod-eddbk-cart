@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+### Fixed
+- Bookings in cart no longer show the session length, in seconds, as a price option.
 
 ## [0.1-alpha2] - 2018-06-06
 ### Added
