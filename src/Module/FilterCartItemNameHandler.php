@@ -111,6 +111,10 @@ class FilterCartItemNameHandler implements InvocableInterface
         // Get service ID from event
         $serviceId = $event->getParam(1);
 
+        if (empty($serviceId)) {
+            return;
+        }
+
         // Alias expression builder
         $b = $this->exprBuilder;
         // EDD Bookings' services select RM only supports AND top-level expressions
