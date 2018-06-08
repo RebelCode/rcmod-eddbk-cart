@@ -7,6 +7,7 @@ use Psr\Container\ContainerInterface;
 use RebelCode\EddBookings\Cart\BookingPriceEvaluator;
 use RebelCode\EddBookings\Cart\BookingValueAwareFactory;
 use RebelCode\EddBookings\Cart\Module\AddBookingToCartHandler;
+use RebelCode\EddBookings\Cart\Module\FilterCartItemNameHandler;
 use RebelCode\EddBookings\Cart\Module\FilterCartItemPriceHandler;
 use RebelCode\EddBookings\Cart\Module\RemoveBookingFromCartHandler;
 use RebelCode\EddBookings\Cart\Module\RenderCartBookingInfoHandler;
@@ -77,6 +78,18 @@ return [
             $c->get('bookings_select_rm'),
             $c->get('sql_expression_builder'),
             $c->get('eddbk_cart/cart_items')
+        );
+    },
+
+    /*
+     * The handler that filters cart item names.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_filter_cart_item_name_handler' => function (ContainerInterface $c) {
+        return new FilterCartItemNameHandler(
+            $c->get('eddbk_services_select_rm'),
+            $c->get('sql_expression_builder')
         );
     },
 
