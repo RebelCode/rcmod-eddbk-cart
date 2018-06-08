@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
 ### Fixed
+- Bookings in cart no longer show the session length, in seconds, as a price option.
 - Cart item spacing for theme compatibility.
 
 ## [0.1-alpha2] - 2018-06-06
