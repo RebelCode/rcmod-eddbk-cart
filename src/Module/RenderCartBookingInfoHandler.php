@@ -227,10 +227,12 @@ class RenderCartBookingInfoHandler implements InvocableInterface
         return $this->_getTemplate()->render([
             'from_label'     => $this->__('From:'),
             'until_label'    => $this->__('Until:'),
+            'timezone_label' => $this->__('Timezone:'),
             'start_datetime' => $startTs,
             'end_datetime'   => $endTs,
             'start_text'     => $startStr,
             'end_text'       => $endStr,
+            'timezone_text'  => $clientTz->getName()
         ]);
     }
 
