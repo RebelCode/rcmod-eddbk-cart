@@ -26,7 +26,6 @@ use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception;
-use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\EventManager\EventInterface;
 use RebelCode\Bookings\BookingInterface;
@@ -204,41 +203,130 @@ class RenderCartBookingInfoHandler implements InvocableInterface
      */
     protected function _renderBookingInfo(BookingInterface $booking)
     {
-        $format = $this->_containerGet($this->cartItemConfig, 'booking_datetime_format');
+        $format   = $this->_containerGet($this->cartItemConfig, 'booking_datetime_format');
+        $clientTz = $this->_getDisplayTimezone($booking);
 
-        try {
-            $clientTz = $this->_containerGet($this->_normalizeContainer($booking), 'client_tz');
-        } catch (InvalidArgumentException $invalidArgumentException) {
-            $clientTz = 'UTC';
-        } catch (NotFoundExceptionInterface $notFoundException) {
-            $clientTz = 'UTC';
+        // Get timestamps from booking
+        $startTs = $booking->getStart();
+        $endTs   = $booking->getEnd();
+
+        // Create date time helper instances
+        $startDt = Carbon::createFromTimestampUTC($startTs);
+        $endDt   = Carbon::createFromTimestampUTC($endTs);
+
+        // Shift to client timezone, if available
+        if ($clientTz !== null) {
+            $startDt->setTimezone($clientTz);
+            $endDt->setTimezone($clientTz);
         }
 
-        try {
-            $tz = new DateTimeZone($clientTz);
-        } catch (Exception $exception) {
-            $tz = new DateTimeZone('UTC');
-        }
-
-        $startTs  = $booking->getStart();
-        $startDt  = Carbon::createFromTimestampUTC($startTs);
-        $startDt->setTimezone($tz);
-        $startUtc = $startDt->getTimestamp();
+        // Format times to strings
         $startStr = $startDt->format($format);
-
-        $endTs  = $booking->getEnd();
-        $endDt  = Carbon::createFromTimestampUTC($endTs);
-        $endDt->setTimezone($tz);
-        $endUtc = $endDt->getTimestamp();
-        $endStr = $endDt->format($format);
+        $endStr   = $endDt->format($format);
 
         return $this->_getTemplate()->render([
             'from_label'     => $this->__('From:'),
             'until_label'    => $this->__('Until:'),
-            'start_datetime' => $startUtc,
-            'end_datetime'   => $endUtc,
+            'start_datetime' => $startTs,
+            'end_datetime'   => $endTs,
             'start_text'     => $startStr,
             'end_text'       => $endStr,
         ]);
+    }
+
+    /**
+     * Retrieves the timezone to use for displaying booking dates and times.
+     *
+     * @since [*next-version*]
+     *
+     * @param BookingInterface $booking The booking instance.
+     *
+     * @return DateTimeZone The timezone instance.
+     */
+    protected function _getDisplayTimezone(BookingInterface $booking)
+    {
+        $try = [
+            [$this, '_getBookingClientTimezone'],
+            [$this, '_getFallbackTimezone'],
+            [$this, '_getWordPressTimezone'],
+        ];
+
+        foreach ($try as $_callable) {
+            try {
+                return call_user_func_array($_callable, [$booking]);
+            } catch (Exception $exception) {
+                continue;
+            }
+        }
+
+        return $this->_getServerTimezone();
+    }
+
+    /**
+     * Retrieves the booking's client timezone.
+     *
+     * @since [*next-version*]
+     *
+     * @param BookingInterface $booking The booking instance.
+     *
+     * @return DateTimeZone The timezone instance.
+     */
+    protected function _getBookingClientTimezone(BookingInterface $booking)
+    {
+        $container    = $this->_normalizeContainer($booking);
+        $clientTzName = $this->_containerGet($container, 'client_tz');
+
+        return new DateTimeZone($clientTzName);
+    }
+
+    /**
+     * Retrieves the fallback timezone.
+     *
+     * @since [*next-version*]
+     *
+     * @return DateTimeZone The timezone instance.
+     */
+    protected function _getFallbackTimezone()
+    {
+        return new DateTimeZone($this->_normalizeString($this->fallbackTz));
+    }
+
+    /**
+     * Retrieves the WordPress timezone.
+     *
+     * @since [*next-version*]
+     *
+     * @return DateTimeZone The timezone instance.
+     */
+    protected function _getWordPressTimezone()
+    {
+        return new DateTimeZone($this->_getWordPressOption('timezone_string'));
+    }
+
+    /**
+     * Retrieves the server timezone.
+     *
+     * @since [*next-version*]
+     *
+     * @return DateTimeZone The timezone instance.
+     */
+    protected function _getServerTimezone()
+    {
+        return new DateTimeZone(date_default_timezone_get());
+    }
+
+    /**
+     * Retrieves the value for a wordpress option.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable $key     The key of the option.
+     * @param bool              $default The default value to return if the option with the given $key is not found.
+     *
+     * @return mixed|null The value of the option, or the value of the $default parameter if the option was not found.
+     */
+    protected function _getWordPressOption($key, $default = false)
+    {
+        return \get_option($this->_normalizeString($key), $default);
     }
 }
