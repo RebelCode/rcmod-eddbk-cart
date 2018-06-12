@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.1-alpha4] - 2018-06-12
 ### Changed
 - Cart now shows booking info datetimes in the client timezone.
+
+### Added
 - Booking items in cart now have price ID association.
 
 ## [0.1-alpha3] - 2018-06-11
