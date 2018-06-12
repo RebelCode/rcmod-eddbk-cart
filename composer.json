@@ -26,7 +26,8 @@
         "rebelcode/rcmod-eddbk-booking-logic": "^0.1-alpha1",
         "rebelcode/booking-interface": "^0.1-alpha1",
         "rebelcode/booking-transitioner-interface": "^0.1-alpha1",
-        "dhii/cqrs-resource-model-interface": "^0.1-alpha2"
+        "dhii/cqrs-resource-model-interface": "^0.1-alpha2",
+        "johnpbloch/wordpress-core": "^4.0"
     },
     "autoload": {
         "psr-4": {
