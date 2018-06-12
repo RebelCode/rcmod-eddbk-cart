@@ -112,6 +112,15 @@ class RenderCartBookingInfoHandler implements InvocableInterface
     protected $cartItemConfig;
 
     /**
+     * The fallback timezone.
+     *
+     * @since [*next-version*]
+     *
+     * @var string|Stringable|null
+     */
+    protected $fallbackTz;
+
+    /**
      * Constructor.
      *
      * @since [*next-version*]
@@ -120,17 +129,21 @@ class RenderCartBookingInfoHandler implements InvocableInterface
      * @param SelectCapableInterface                        $bookingsSelectRm The bookings SELECT resource model.
      * @param object                                        $exprBuilder      The expression builder.
      * @param array|stdClass|ArrayAccess|ContainerInterface $cartItemConfig   The cart item data config.
+     * @param string|Stringable|null                        $fallbackTz       The fallback timezone to use for bookings
+     *                                                                        that do not have a client timezone.
      */
     public function __construct(
         TemplateInterface $template,
         SelectCapableInterface $bookingsSelectRm,
         $exprBuilder,
-        $cartItemConfig
+        $cartItemConfig,
+        $fallbackTz
     ) {
         $this->_setTemplate($template);
         $this->bookingsSelectRm = $bookingsSelectRm;
         $this->exprBuilder      = $exprBuilder;
         $this->cartItemConfig   = $cartItemConfig;
+        $this->fallbackTz       = $fallbackTz;
     }
 
     /**
