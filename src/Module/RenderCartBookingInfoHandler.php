@@ -3,6 +3,8 @@
 namespace RebelCode\EddBookings\Cart\Module;
 
 use ArrayAccess;
+use Carbon\Carbon;
+use DateTimeZone;
 use Dhii\Data\Container\ContainerGetCapableTrait;
 use Dhii\Data\Container\ContainerGetPathCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
@@ -23,6 +25,8 @@ use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
+use Exception;
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\EventManager\EventInterface;
 use RebelCode\Bookings\BookingInterface;
@@ -189,19 +193,37 @@ class RenderCartBookingInfoHandler implements InvocableInterface
     {
         $format = $this->_containerGet($this->cartItemConfig, 'booking_datetime_format');
 
+        try {
+            $clientTz = $this->_containerGet($this->_normalizeContainer($booking), 'client_tz');
+        } catch (InvalidArgumentException $invalidArgumentException) {
+            $clientTz = 'UTC';
+        } catch (NotFoundExceptionInterface $notFoundException) {
+            $clientTz = 'UTC';
+        }
+
+        try {
+            $tz = new DateTimeZone($clientTz);
+        } catch (Exception $exception) {
+            $tz = new DateTimeZone('UTC');
+        }
+
         $startTs  = $booking->getStart();
-        $startDt  = date(DATE_ATOM, $startTs);
-        $startStr = date($format, $startTs);
+        $startDt  = Carbon::createFromTimestampUTC($startTs);
+        $startDt->setTimezone($tz);
+        $startUtc = $startDt->getTimestamp();
+        $startStr = $startDt->format($format);
 
         $endTs  = $booking->getEnd();
-        $endDt  = date(DATE_ATOM, $endTs);
-        $endStr = date($format, $endTs);
+        $endDt  = Carbon::createFromTimestampUTC($endTs);
+        $endDt->setTimezone($tz);
+        $endUtc = $endDt->getTimestamp();
+        $endStr = $endDt->format($format);
 
         return $this->_getTemplate()->render([
             'from_label'     => $this->__('From:'),
             'until_label'    => $this->__('Until:'),
-            'start_datetime' => $startDt,
-            'end_datetime'   => $endDt,
+            'start_datetime' => $startUtc,
+            'end_datetime'   => $endUtc,
             'start_text'     => $startStr,
             'end_text'       => $endStr,
         ]);
