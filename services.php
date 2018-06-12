@@ -118,7 +118,8 @@ return [
             $c->get('eddbk_cart_booking_info_template'),
             $c->get('bookings_select_rm'),
             $c->get('sql_expression_builder'),
-            $c->get('eddbk_cart/cart_items')
+            $c->get('eddbk_cart/cart_items'),
+            $c->get('eddbk_cart/fallback_timezone')
         );
     },
 

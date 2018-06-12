@@ -88,6 +88,9 @@
       <path value="$PROJECT_DIR$/vendor/dhii/output-renderer-interface" />
       <path value="$PROJECT_DIR$/vendor/dhii/output-renderer-abstract" />
       <path value="$PROJECT_DIR$/vendor/dhii/regex-abstract" />
+      <path value="$PROJECT_DIR$/vendor/nesbot/carbon" />
+      <path value="$PROJECT_DIR$/vendor/symfony/translation" />
+      <path value="$PROJECT_DIR$/vendor/johnpbloch/wordpress-core" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="5.4.0" />

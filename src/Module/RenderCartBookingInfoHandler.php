@@ -3,6 +3,8 @@
 namespace RebelCode\EddBookings\Cart\Module;
 
 use ArrayAccess;
+use Carbon\Carbon;
+use DateTimeZone;
 use Dhii\Data\Container\ContainerGetCapableTrait;
 use Dhii\Data\Container\ContainerGetPathCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
@@ -23,6 +25,7 @@ use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
+use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\EventManager\EventInterface;
 use RebelCode\Bookings\BookingInterface;
@@ -108,6 +111,15 @@ class RenderCartBookingInfoHandler implements InvocableInterface
     protected $cartItemConfig;
 
     /**
+     * The fallback timezone.
+     *
+     * @since [*next-version*]
+     *
+     * @var string|Stringable|null
+     */
+    protected $fallbackTz;
+
+    /**
      * Constructor.
      *
      * @since [*next-version*]
@@ -116,17 +128,21 @@ class RenderCartBookingInfoHandler implements InvocableInterface
      * @param SelectCapableInterface                        $bookingsSelectRm The bookings SELECT resource model.
      * @param object                                        $exprBuilder      The expression builder.
      * @param array|stdClass|ArrayAccess|ContainerInterface $cartItemConfig   The cart item data config.
+     * @param string|Stringable|null                        $fallbackTz       The fallback timezone to use for bookings
+     *                                                                        that do not have a client timezone.
      */
     public function __construct(
         TemplateInterface $template,
         SelectCapableInterface $bookingsSelectRm,
         $exprBuilder,
-        $cartItemConfig
+        $cartItemConfig,
+        $fallbackTz
     ) {
         $this->_setTemplate($template);
         $this->bookingsSelectRm = $bookingsSelectRm;
         $this->exprBuilder      = $exprBuilder;
         $this->cartItemConfig   = $cartItemConfig;
+        $this->fallbackTz       = $fallbackTz;
     }
 
     /**
@@ -187,23 +203,132 @@ class RenderCartBookingInfoHandler implements InvocableInterface
      */
     protected function _renderBookingInfo(BookingInterface $booking)
     {
-        $format = $this->_containerGet($this->cartItemConfig, 'booking_datetime_format');
+        $format   = $this->_containerGet($this->cartItemConfig, 'booking_datetime_format');
+        $clientTz = $this->_getDisplayTimezone($booking);
 
-        $startTs  = $booking->getStart();
-        $startDt  = date(DATE_ATOM, $startTs);
-        $startStr = date($format, $startTs);
+        // Get timestamps from booking
+        $startTs = $booking->getStart();
+        $endTs   = $booking->getEnd();
 
-        $endTs  = $booking->getEnd();
-        $endDt  = date(DATE_ATOM, $endTs);
-        $endStr = date($format, $endTs);
+        // Create date time helper instances
+        $startDt = Carbon::createFromTimestampUTC($startTs);
+        $endDt   = Carbon::createFromTimestampUTC($endTs);
+
+        // Shift to client timezone, if available
+        if ($clientTz !== null) {
+            $startDt->setTimezone($clientTz);
+            $endDt->setTimezone($clientTz);
+        }
+
+        // Format times to strings
+        $startStr = $startDt->format($format);
+        $endStr   = $endDt->format($format);
 
         return $this->_getTemplate()->render([
             'from_label'     => $this->__('From:'),
             'until_label'    => $this->__('Until:'),
-            'start_datetime' => $startDt,
-            'end_datetime'   => $endDt,
+            'timezone_label' => $this->__('Timezone:'),
+            'start_datetime' => $startTs,
+            'end_datetime'   => $endTs,
             'start_text'     => $startStr,
             'end_text'       => $endStr,
+            'timezone_text'  => $clientTz->getName()
         ]);
+    }
+
+    /**
+     * Retrieves the timezone to use for displaying booking dates and times.
+     *
+     * @since [*next-version*]
+     *
+     * @param BookingInterface $booking The booking instance.
+     *
+     * @return DateTimeZone The timezone instance.
+     */
+    protected function _getDisplayTimezone(BookingInterface $booking)
+    {
+        $try = [
+            [$this, '_getBookingClientTimezone'],
+            [$this, '_getFallbackTimezone'],
+            [$this, '_getWordPressTimezone'],
+        ];
+
+        foreach ($try as $_callable) {
+            try {
+                return call_user_func_array($_callable, [$booking]);
+            } catch (Exception $exception) {
+                continue;
+            }
+        }
+
+        return $this->_getServerTimezone();
+    }
+
+    /**
+     * Retrieves the booking's client timezone.
+     *
+     * @since [*next-version*]
+     *
+     * @param BookingInterface $booking The booking instance.
+     *
+     * @return DateTimeZone The timezone instance.
+     */
+    protected function _getBookingClientTimezone(BookingInterface $booking)
+    {
+        $container    = $this->_normalizeContainer($booking);
+        $clientTzName = $this->_containerGet($container, 'client_tz');
+
+        return new DateTimeZone($clientTzName);
+    }
+
+    /**
+     * Retrieves the fallback timezone.
+     *
+     * @since [*next-version*]
+     *
+     * @return DateTimeZone The timezone instance.
+     */
+    protected function _getFallbackTimezone()
+    {
+        return new DateTimeZone($this->_normalizeString($this->fallbackTz));
+    }
+
+    /**
+     * Retrieves the WordPress timezone.
+     *
+     * @since [*next-version*]
+     *
+     * @return DateTimeZone The timezone instance.
+     */
+    protected function _getWordPressTimezone()
+    {
+        return new DateTimeZone($this->_getWordPressOption('timezone_string'));
+    }
+
+    /**
+     * Retrieves the server timezone.
+     *
+     * @since [*next-version*]
+     *
+     * @return DateTimeZone The timezone instance.
+     */
+    protected function _getServerTimezone()
+    {
+        return new DateTimeZone(date_default_timezone_get());
+    }
+
+    /**
+     * Retrieves the value for a wordpress option.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable $key     The key of the option.
+     * @param bool              $default The default value to return if the option with the given $key is not found.
+     *
+     * @return mixed|null The value of the option, or the value of the $default parameter if the option was not found.
+     */
+    protected function _getWordPressOption($key, $default = false)
+    {
+        return \get_option($this->_normalizeString($key), $default);
     }
 }

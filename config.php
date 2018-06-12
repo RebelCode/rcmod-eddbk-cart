@@ -62,6 +62,13 @@ return [
             ],
         ],
         /*
+         * Optional default timezone to fallback to, for bookings without a timezone.
+         * If not given, the fallback timezone is deduced from WordPress or the server.
+         *
+         * @since [*next-version*]
+         */
+        'fallback_timezone' => '',
+        /*
          * Configuration for placeholder templates.
          */
         'templates' => [
