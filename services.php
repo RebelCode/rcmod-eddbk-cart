@@ -9,6 +9,7 @@ use RebelCode\EddBookings\Cart\BookingValueAwareFactory;
 use RebelCode\EddBookings\Cart\Module\AddBookingToCartHandler;
 use RebelCode\EddBookings\Cart\Module\FilterCartItemNameHandler;
 use RebelCode\EddBookings\Cart\Module\FilterCartItemPriceHandler;
+use RebelCode\EddBookings\Cart\Module\FilterCartItemPriceOptionIdHandler;
 use RebelCode\EddBookings\Cart\Module\RemoveBookingFromCartHandler;
 use RebelCode\EddBookings\Cart\Module\RenderCartBookingInfoHandler;
 use RebelCode\EddBookings\Cart\Module\SubmitBookingOnPaymentHandler;
@@ -31,6 +32,8 @@ return [
      */
     'eddbk_add_booking_to_cart_handler' => function (ContainerInterface $c) {
         return new AddBookingToCartHandler(
+            $c->get('eddbk_services_select_rm'),
+            $c->get('sql_expression_builder'),
             $c->get('edd_cart'),
             $c->get('eddbk_cart/cart_items')
         );
