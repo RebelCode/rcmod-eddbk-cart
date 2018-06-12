@@ -234,10 +234,6 @@ class AddBookingToCartHandler implements InvocableInterface
             )
         );
 
-        if ($this->_countIterable($services) !== 1) {
-            return;
-        }
-
-        return reset($services);
+        return reset($services) ?: null;
     }
 }
