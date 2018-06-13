@@ -1,5 +1,6 @@
 <?php
 
+use Dhii\Cache\MemoryMemoizer;
 use Dhii\Output\PlaceholderTemplate;
 use Dhii\Output\PlaceholderTemplateFactory;
 use Dhii\Output\TemplateFactoryInterface;
@@ -134,6 +135,7 @@ return [
      */
     'eddbk_render_confirmation_bookings_handler' => function(ContainerInterface $c) {
         return new RenderConfirmationBookingsHandler(
+            new MemoryMemoizer(),
             $c->get('eddbk_confirmation_table_template'),
             $c->get('eddbk_confirmation_booking_row_template'),
             $c->get('bookings_select_rm'),
