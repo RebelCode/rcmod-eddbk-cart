@@ -16,6 +16,7 @@
         "rebelcode/modular": "^0.1-alpha1",
         "dhii/evaluable-interface": "^0.1-alpha1",
         "dhii/placeholder-template": "^0.1-alpha2",
+        "dhii/memoize-memory": "^0.2-alpha1",
         "nesbot/carbon": "^1.29.0"
     },
     "require-dev": {
