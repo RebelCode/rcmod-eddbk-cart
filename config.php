@@ -27,6 +27,13 @@ return [
                 'key' => 'options',
 
                 /*
+                 * The key used in cart item data to store the price option ID.
+                 *
+                 * @since [*next-version*]
+                 */
+                'price_id_key' => 'price_id',
+
+                /*
                  * The main key used in cart item data by EDD Bookings.
                  *
                  * @since [*next-version*]

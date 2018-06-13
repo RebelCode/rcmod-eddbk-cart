@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
 
+## [0.1-alpha4] - 2018-06-12
+### Changed
+- Cart now shows booking info datetimes in the client timezone.
+
+### Added
+- Booking items in cart now have price ID association.
+
 ## [0.1-alpha3] - 2018-06-11
 ### Fixed
 - Bookings in cart no longer show the session length, in seconds, as a price option.
