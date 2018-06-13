@@ -23,6 +23,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\EventManager\EventInterface;
 use RebelCode\Bookings\BookingInterface;
 use RuntimeException;
+use Traversable;
 
 /**
  * The handler that renders the bookings information table in the EDD purchase confirmation page.
@@ -168,6 +169,20 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
         $condition = $b->eq($b->var('payment_id'), $b->lit($paymentId));
         $bookings  = $this->bookingsSelectRm->select($condition);
 
+        return $this->_renderBookingsTable($bookings);
+    }
+
+    /**
+     * Renders the bookings table.
+     *
+     * @since [*next-version*]
+     *
+     * @param BookingInterface[]|Traversable $bookings The bookings to render in the table.
+     *
+     * @return string|Stringable The render output.
+     */
+    protected function _renderBookingsTable($bookings)
+    {
         $rows = '';
         foreach ($bookings as $_booking) {
             if (!($_booking instanceof BookingInterface)) {
@@ -179,7 +194,7 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
             $rows = $this->_renderBookingRow($_booking);
         }
 
-        echo $this->_getTemplate()->render([
+        return $this->_getTemplate()->render([
             'table_heading'        => $this->__('Bookings'),
             'service_column'       => $this->__('Service'),
             'booking_start_column' => $this->__('Start'),
