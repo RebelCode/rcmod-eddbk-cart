@@ -11,6 +11,7 @@ use RebelCode\EddBookings\Cart\Module\FilterCartItemNameHandler;
 use RebelCode\EddBookings\Cart\Module\FilterCartItemPriceHandler;
 use RebelCode\EddBookings\Cart\Module\RemoveBookingFromCartHandler;
 use RebelCode\EddBookings\Cart\Module\RenderCartBookingInfoHandler;
+use RebelCode\EddBookings\Cart\Module\RenderConfirmationBookingsHandler;
 use RebelCode\EddBookings\Cart\Module\SubmitBookingOnPaymentHandler;
 use RebelCode\EddBookings\Cart\Module\ValidateCartBookingHandler;
 
@@ -119,6 +120,23 @@ return [
             $c->get('bookings_select_rm'),
             $c->get('sql_expression_builder'),
             $c->get('eddbk_cart/cart_items'),
+            $c->get('eddbk_cart/fallback_timezone')
+        );
+    },
+
+    /*
+     * The handler that renders the bookings in the EDD purchase confirmation page.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_render_confirmation_bookings_handler' => function(ContainerInterface $c) {
+        return new RenderConfirmationBookingsHandler(
+            $c->get('eddbk_confirmation_table_template'),
+            $c->get('eddbk_confirmation_booking_row_template'),
+            $c->get('bookings_select_rm'),
+            $c->get('eddbk_services_select_rm'),
+            $c->get('sql_expression_builder'),
+            $c->get('eddbk_cart/confirmation_page/booking_datetime_format'),
             $c->get('eddbk_cart/fallback_timezone')
         );
     },
