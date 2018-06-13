@@ -135,7 +135,7 @@ return [
      */
     'eddbk_render_confirmation_bookings_handler' => function(ContainerInterface $c) {
         return new RenderConfirmationBookingsHandler(
-            new MemoryMemoizer(),
+            $c->get('eddbk_cart_service_name_cache'),
             $c->get('eddbk_confirmation_table_template'),
             $c->get('eddbk_confirmation_booking_row_template'),
             $c->get('bookings_select_rm'),
@@ -144,6 +144,15 @@ return [
             $c->get('eddbk_cart/confirmation_page/booking_datetime_format'),
             $c->get('eddbk_cart/fallback_timezone')
         );
+    },
+
+    /*
+     * The cache that caches service names by ID.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_cart_service_name_cache' => function (ContainerInterface $c) {
+        return new MemoryMemoizer();
     },
 
     /*
