@@ -3,6 +3,7 @@
 namespace RebelCode\EddBookings\Cart\Module;
 
 use Carbon\Carbon;
+use Dhii\Cache\SimpleCacheInterface;
 use Dhii\Data\Container\ContainerGetCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
@@ -19,7 +20,6 @@ use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception;
-use Psr\Container\ContainerExceptionInterface;
 use Psr\EventManager\EventInterface;
 use RebelCode\Bookings\BookingInterface;
 use RuntimeException;
@@ -67,6 +67,15 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
 
     /* @since [*next-version*] */
     use StringTranslatingTrait;
+
+    /**
+     * The service name cache.
+     *
+     * @since [*next-version*]
+     *
+     * @var SimpleCacheInterface
+     */
+    protected $serviceNameCache;
 
     /**
      * The template for rendering booking rows.
@@ -118,6 +127,7 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
+     * @param SimpleCacheInterface   $serviceNameCache     The cache for service names.
      * @param TemplateInterface      $bookingTableTemplate The bookings table template.
      * @param TemplateInterface      $bookingRowTemplate   The bookings table row template.
      * @param SelectCapableInterface $bookingsSelectRm     The bookings SELECT resource model.
@@ -127,6 +137,7 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
      * @param string|Stringable|null $fallbackTz           The fallback timezone name.
      */
     public function __construct(
+        SimpleCacheInterface $serviceNameCache,
         TemplateInterface $bookingTableTemplate,
         TemplateInterface $bookingRowTemplate,
         SelectCapableInterface $bookingsSelectRm,
@@ -137,6 +148,7 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
     ) {
         $this->_setTemplate($bookingTableTemplate);
         $this->_setFallbackTz($fallbackTz);
+        $this->serviceNameCache   = $serviceNameCache;
         $this->bookingRowTemplate = $bookingRowTemplate;
         $this->bookingsSelectRm   = $bookingsSelectRm;
         $this->servicesSelectRm   = $servicesSelectRm;
@@ -271,6 +283,20 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
             );
         }
 
+        return $this->serviceNameCache->get($serviceId, [$this, '_getServiceNameById']);
+    }
+
+    /**
+     * Retrieves the service name by ID, without using cache.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string|Stringable $serviceId The service ID.
+     *
+     * @return string|Stringable The service name.
+     */
+    protected function _getServiceNameById($serviceId)
+    {
         // Alias expression builder
         $b = $this->exprBuilder;
         // EDD Bookings' services select RM only supports AND top-level expressions
@@ -283,12 +309,6 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
 
         $service = reset($services) ? : null;
 
-        try {
-            return $this->_containerGet($service, 'name');
-        } catch (ContainerExceptionInterface $exception) {
-            throw $this->_createRuntimeException(
-                $this->__('Failed to get the name of the service for a booking'), null, $exception
-            );
-        }
+        return $this->_containerGet($service, 'name');
     }
 }
