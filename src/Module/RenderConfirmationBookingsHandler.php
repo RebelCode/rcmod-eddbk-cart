@@ -169,7 +169,7 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
         $condition = $b->eq($b->var('payment_id'), $b->lit($paymentId));
         $bookings  = $this->bookingsSelectRm->select($condition);
 
-        return $this->_renderBookingsTable($bookings);
+        echo $this->_renderBookingsTable($bookings);
     }
 
     /**
