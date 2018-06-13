@@ -91,6 +91,16 @@
       <path value="$PROJECT_DIR$/vendor/nesbot/carbon" />
       <path value="$PROJECT_DIR$/vendor/symfony/translation" />
       <path value="$PROJECT_DIR$/vendor/johnpbloch/wordpress-core" />
+      <path value="$PROJECT_DIR$/vendor/dhii/memoize-memory" />
+      <path value="$PROJECT_DIR$/vendor/dhii/iterator-base" />
+      <path value="$PROJECT_DIR$/vendor/dhii/iterator-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/data-path-aware-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/cache-abstract" />
+      <path value="$PROJECT_DIR$/vendor/dhii/map" />
+      <path value="$PROJECT_DIR$/vendor/dhii/simple-cache-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/data-hierarchy-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/iterator-abstract" />
+      <path value="$PROJECT_DIR$/vendor/dhii/data-object-abstract" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="5.4.0" />
