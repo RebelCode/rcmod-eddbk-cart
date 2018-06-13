@@ -153,6 +153,36 @@ return [
     },
 
     /*
+     * The template for the bookings table in the purchase confirmation page.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_confirmation_table_template' => function(ContainerInterface $c) {
+        $templateFile = $c->get('eddbk_cart/confirmation_page/templates/table');
+        $templatePath = EDDBK_CART_MODULE_TEMPLATES_DIR . DIRECTORY_SEPARATOR . $templateFile;
+        $template = file_get_contents($templatePath);
+
+        return $c->get('eddbk_cart_template_factory')->make([
+            TemplateFactoryInterface::K_TEMPLATE => $template
+        ]);
+    },
+
+    /*
+     * The template for the bookings rows in the purchase confirmation page bookings table.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_confirmation_booking_row_template' => function(ContainerInterface $c) {
+        $templateFile = $c->get('eddbk_cart/confirmation_page/templates/booking_row');
+        $templatePath = EDDBK_CART_MODULE_TEMPLATES_DIR . DIRECTORY_SEPARATOR . $templateFile;
+        $template = file_get_contents($templatePath);
+
+        return $c->get('eddbk_cart_template_factory')->make([
+            TemplateFactoryInterface::K_TEMPLATE => $template
+        ]);
+    },
+
+    /*
      * The booking price evaluator.
      *
      * @since [*next-version*]
