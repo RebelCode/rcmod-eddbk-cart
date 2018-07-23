@@ -17,7 +17,7 @@ define('EDDBK_CART_MODULE_SERVICES_FILE', EDDBK_CART_MODULE_SERVICES_DIR . '/ser
 return function (ContainerInterface $c) {
     return new EddBkCartModule(
         EDDBK_CART_MODULE_KEY,
-        [],
+        ['wp_bookings_cqrs', 'booking_logic'],
         $c->get('config_factory'),
         $c->get('container_factory'),
         $c->get('composite_container_factory'),
