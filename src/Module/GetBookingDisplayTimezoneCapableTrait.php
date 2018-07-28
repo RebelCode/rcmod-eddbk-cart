@@ -9,9 +9,9 @@ use Exception;
 use Exception as RootException;
 use InvalidArgumentException;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Container\ContainerInterface as BaseContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use RebelCode\Bookings\BookingInterface;
 use stdClass;
 
 /**
@@ -65,11 +65,11 @@ trait GetBookingDisplayTimezoneCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param BookingInterface $booking The booking instance.
+     * @param array|stdClass|ArrayAccess|ContainerInterface $bookingData The booking data.
      *
      * @return DateTimeZone The timezone instance.
      */
-    protected function _getDisplayTimezone(BookingInterface $booking)
+    protected function _getDisplayTimezone($bookingData)
     {
         $try = [
             [$this, '_getBookingClientTimezone'],
@@ -79,7 +79,7 @@ trait GetBookingDisplayTimezoneCapableTrait
 
         foreach ($try as $_callable) {
             try {
-                return call_user_func_array($_callable, [$booking]);
+                return call_user_func_array($_callable, [$bookingData]);
             } catch (Exception $exception) {
                 continue;
             }
@@ -93,14 +93,13 @@ trait GetBookingDisplayTimezoneCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param BookingInterface $booking The booking instance.
+     * @param array|stdClass|ArrayAccess|ContainerInterface $bookingData The booking data.
      *
      * @return DateTimeZone The timezone instance.
      */
-    protected function _getBookingClientTimezone(BookingInterface $booking)
+    protected function _getBookingClientTimezone($bookingData)
     {
-        $container    = $this->_normalizeContainer($booking);
-        $clientTzName = $this->_containerGet($container, 'client_tz');
+        $clientTzName = $this->_containerGet($bookingData, 'client_tz');
 
         return new DateTimeZone($clientTzName);
     }
