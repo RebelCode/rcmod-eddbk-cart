@@ -9,7 +9,6 @@ use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
 use Dhii\Data\Container\NormalizeContainerCapableTrait;
 use Dhii\Data\Container\NormalizeKeyCapableTrait;
-use Dhii\Data\StateAwareInterface;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
@@ -27,7 +26,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventManager\EventInterface;
-use RebelCode\Bookings\BookingInterface;
+use RebelCode\Bookings\StateAwareBookingInterface;
 use RebelCode\EddBookings\Logic\Module\BookingTransitionInterface as Transition;
 use stdClass;
 
@@ -157,7 +156,7 @@ class AddBookingToCartHandler implements InvocableInterface
         // Get and validate the booking from the event
         $booking = $event->getParam('booking');
 
-        if (!($booking instanceof StateAwareInterface)) {
+        if (!($booking instanceof StateAwareBookingInterface)) {
             throw $this->_createInvalidArgumentException(
                 $this->__('Booking in event is not a valid state-aware instance'), null, null, $booking
             );
@@ -171,21 +170,19 @@ class AddBookingToCartHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param StateAwareInterface $booking The booking.
+     * @param StateAwareBookingInterface $booking The booking.
      *
      * @throws InvalidArgumentException    If the booking is not a valid container.
      * @throws NotFoundExceptionInterface  If the service ID was not be found in the booking data.
      * @throws ContainerExceptionInterface If an error occurred while reading the booking data.
      */
-    protected function _addToCart(StateAwareInterface $booking)
+    protected function _addToCart(StateAwareBookingInterface $booking)
     {
         $state = $booking->getState();
 
         $bookingId = $state->get('id');
         $serviceId = $state->get('service_id');
-        $duration  = ($booking instanceof BookingInterface)
-            ? $booking->getDuration()
-            : $state->get('end') - $state->get('end');
+        $duration  = $booking->getDuration();
 
         // Get the cart item data keys from the cart item config
         $eddBkKey     = $this->_containerGetPath($this->cartItemConfig, ['data', 'eddbk_key']);
