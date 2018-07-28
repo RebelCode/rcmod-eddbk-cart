@@ -33,7 +33,6 @@
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-ctype" />
       <path value="$PROJECT_DIR$/vendor/symfony/event-dispatcher" />
       <path value="$PROJECT_DIR$/vendor/symfony/debug" />
-      <path value="$PROJECT_DIR$/vendor/rebelcode/booking-transitioner-interface" />
       <path value="$PROJECT_DIR$/vendor/rebelcode/booking-interface" />
       <path value="$PROJECT_DIR$/vendor/rebelcode/modular" />
       <path value="$PROJECT_DIR$/vendor/rebelcode/module-iterator-abstract" />
@@ -77,7 +76,6 @@
       <path value="$PROJECT_DIR$/vendor/dhii/state-machine-abstract" />
       <path value="$PROJECT_DIR$/vendor/dhii/machine-state-machine-interface" />
       <path value="$PROJECT_DIR$/vendor/dhii/evaluable-interface" />
-      <path value="$PROJECT_DIR$/vendor/rebelcode/booking-abstract" />
       <path value="$PROJECT_DIR$/vendor/rebelcode/booking-transitioner" />
       <path value="$PROJECT_DIR$/vendor/dhii/placeholder-template-abstract" />
       <path value="$PROJECT_DIR$/vendor/dhii/stringable-helper-base" />
@@ -100,6 +98,26 @@
       <path value="$PROJECT_DIR$/vendor/dhii/data-hierarchy-interface" />
       <path value="$PROJECT_DIR$/vendor/dhii/iterator-abstract" />
       <path value="$PROJECT_DIR$/vendor/dhii/data-object-abstract" />
+      <path value="$PROJECT_DIR$/vendor/dhii/expression-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/expression-renderer-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/sql-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/transition-event-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/type-interface" />
+      <path value="$PROJECT_DIR$/vendor/rebelcode/event-state-machine" />
+      <path value="$PROJECT_DIR$/vendor/symfony/stopwatch" />
+      <path value="$PROJECT_DIR$/vendor/rebelcode/expression-wp-query-builder" />
+      <path value="$PROJECT_DIR$/vendor/rebelcode/sql-cqrs-resource-models-abstract" />
+      <path value="$PROJECT_DIR$/vendor/rebelcode/rcmod-booking-logic" />
+      <path value="$PROJECT_DIR$/vendor/rebelcode/rcmod-wp-bookings-cqrs" />
+      <path value="$PROJECT_DIR$/vendor/rebelcode/session-generator" />
+      <path value="$PROJECT_DIR$/vendor/rebelcode/wp-cqrs-resource-models" />
+      <path value="$PROJECT_DIR$/vendor/rebelcode/session-generator-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/data-state-abstract" />
+      <path value="$PROJECT_DIR$/vendor/dhii/data-state-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/data-state-base" />
+      <path value="$PROJECT_DIR$/vendor/rebelcode/rc-booking-interface" />
+      <path value="$PROJECT_DIR$/vendor/rebelcode/rc-booking" />
+      <path value="$PROJECT_DIR$/vendor/rebelcode/time-abstract" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="5.4.0" />
