@@ -190,9 +190,9 @@ class AddBookingToCartHandler implements InvocableInterface
         $priceIdKey   = $this->_containerGetPath($this->cartItemConfig, ['data', 'price_id_key']);
 
         // Find the price ID
-        $service  = $this->_getServiceById($serviceId);
-        $lengths  = $this->_containerGet($service, 'session_lengths');
-        $priceId  = null;
+        $service = $this->_getServiceById($serviceId);
+        $lengths = $this->_containerGet($service, 'session_lengths');
+        $priceId = null;
         foreach ($lengths as $_idx => $_lengthInfo) {
             $_length = (int) $this->_containerGet($_lengthInfo, 'sessionLength');
 
@@ -234,6 +234,6 @@ class AddBookingToCartHandler implements InvocableInterface
             )
         );
 
-        return reset($services) ?: null;
+        return reset($services) ? : null;
     }
 }
