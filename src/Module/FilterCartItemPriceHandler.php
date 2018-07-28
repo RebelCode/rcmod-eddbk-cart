@@ -236,8 +236,9 @@ class FilterCartItemPriceHandler implements InvocableInterface
      */
     protected function _evaluateBookingPrice(BookingInterface $booking)
     {
-        return $this->_getPriceEvaluator()->evaluate(
-            $this->_getBookingValueAwareFactory()->make(['booking' => $booking])
-        );
+        $context = $this->_getBookingValueAwareFactory()->make(['booking' => $booking]);
+        $price   = $this->_getPriceEvaluator()->evaluate($context);
+
+        return $price;
     }
 }
