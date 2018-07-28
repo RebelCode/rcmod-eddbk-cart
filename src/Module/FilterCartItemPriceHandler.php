@@ -8,6 +8,8 @@ use Dhii\Data\Container\ContainerGetPathCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
 use Dhii\Data\Container\NormalizeKeyCapableTrait;
+use Dhii\Data\StateAwareFactoryInterface;
+use Dhii\Data\StateAwareInterface;
 use Dhii\Evaluable\EvaluableInterface;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
@@ -27,7 +29,6 @@ use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventManager\EventInterface;
-use RebelCode\Bookings\BookingInterface;
 use stdClass;
 
 /**
@@ -92,6 +93,15 @@ class FilterCartItemPriceHandler implements InvocableInterface
     protected $bookingsSelectRm;
 
     /**
+     * The factory for creating state-aware bookings.
+     *
+     * @since [*next-version*]
+     *
+     * @var StateAwareFactoryInterface
+     */
+    protected $stateAwareFactory;
+
+    /**
      * The evaluable instance that evaluates a booking's price.
      *
      * @since [*next-version*]
@@ -124,6 +134,8 @@ class FilterCartItemPriceHandler implements InvocableInterface
      * @since [*next-version*]
      *
      * @param SelectCapableInterface                        $bookingsSelectRm  The bookings SELECT resource model.
+     * @param StateAwareFactoryInterface                    $stateAwareFactory The factory for creating state-aware
+     *                                                                         bookings.
      * @param EvaluableInterface|null                       $priceEvaluator    The booking price evaluator.
      * @param FactoryInterface                              $valueAwareFactory The value aware factory.
      * @param object                                        $exprBuilder       The expression builder.
@@ -131,6 +143,7 @@ class FilterCartItemPriceHandler implements InvocableInterface
      */
     public function __construct(
         SelectCapableInterface $bookingsSelectRm,
+        StateAwareFactoryInterface $stateAwareFactory,
         EvaluableInterface $priceEvaluator,
         FactoryInterface $valueAwareFactory,
         $exprBuilder,
@@ -139,9 +152,10 @@ class FilterCartItemPriceHandler implements InvocableInterface
         $this->_setPriceEvaluator($priceEvaluator);
         $this->_setBookingValueAwareFactory($valueAwareFactory);
 
-        $this->bookingsSelectRm = $bookingsSelectRm;
-        $this->exprBuilder      = $exprBuilder;
-        $this->cartItemConfig   = $cartItemConfig;
+        $this->bookingsSelectRm  = $bookingsSelectRm;
+        $this->exprBuilder       = $exprBuilder;
+        $this->cartItemConfig    = $cartItemConfig;
+        $this->stateAwareFactory = $stateAwareFactory;
     }
 
     /**
@@ -213,8 +227,12 @@ class FilterCartItemPriceHandler implements InvocableInterface
         if ($this->_countIterable($bookings) !== 1) {
             return;
         }
-        // Get the booking
-        $booking = reset($bookings);
+        // Get the booking data
+        $bookingData = reset($bookings);
+        // Create the booking
+        $booking = $this->stateAwareFactory->make([
+            StateAwareFactoryInterface::K_DATA => $bookingData,
+        ]);
 
         try {
             $price = $this->_evaluateBookingPrice($booking);
@@ -230,11 +248,11 @@ class FilterCartItemPriceHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param BookingInterface $booking The booking instance.
+     * @param StateAwareInterface $booking The booking instance.
      *
      * @return int|float|string|Stringable The booking price.
      */
-    protected function _evaluateBookingPrice(BookingInterface $booking)
+    protected function _evaluateBookingPrice($booking)
     {
         $context = $this->_getBookingValueAwareFactory()->make(['booking' => $booking]);
         $price   = $this->_getPriceEvaluator()->evaluate($context);

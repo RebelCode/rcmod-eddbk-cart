@@ -7,6 +7,7 @@ use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
 use Dhii\Data\Container\NormalizeContainerCapableTrait;
 use Dhii\Data\Container\NormalizeKeyCapableTrait;
+use Dhii\Data\StateAwareInterface;
 use Dhii\Data\ValueAwareInterface;
 use Dhii\Evaluable\EvaluableInterface;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
@@ -19,7 +20,7 @@ use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
-use RebelCode\Bookings\StateAwareBookingInterface;
+use RebelCode\Bookings\BookingInterface;
 
 /**
  * Evaluates booking prices.
@@ -111,7 +112,7 @@ class BookingPriceEvaluator implements EvaluableInterface
     {
         $booking = $ctx->getValue();
 
-        if (!($booking instanceof StateAwareBookingInterface)) {
+        if (!($booking instanceof StateAwareInterface) || !($booking instanceof BookingInterface)) {
             throw $this->_createRuntimeException(
                 $this->__('Cannot determine price - argument is not a state-aware booking instance'), null, null
             );
