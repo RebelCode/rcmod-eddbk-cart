@@ -274,7 +274,7 @@ class SubmitBookingOnPaymentHandler implements InvocableInterface
      *
      * @param int|string $paymentId The payment ID.
      *
-     * @return int|string|Stringable
+     * @return array|stdClass|ArrayAccess|ContainerInterface
      */
     protected function _getPaymentMetaData($paymentId)
     {
