@@ -2,7 +2,6 @@
 
 namespace RebelCode\EddBookings\Cart;
 
-use ArrayAccess;
 use Dhii\Data\Container\ContainerGetCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
@@ -20,9 +19,7 @@ use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
-use InvalidArgumentException;
-use Psr\Container\ContainerInterface;
-use RebelCode\Bookings\BookingInterface;
+use RebelCode\Bookings\StateAwareBookingInterface;
 
 /**
  * Evaluates booking prices.
@@ -114,24 +111,14 @@ class BookingPriceEvaluator implements EvaluableInterface
     {
         $booking = $ctx->getValue();
 
-        if (!($booking instanceof BookingInterface)) {
+        if (!($booking instanceof StateAwareBookingInterface)) {
             throw $this->_createRuntimeException(
-                $this->__('Cannot determine price - argument is not a booking instance'), null, null
+                $this->__('Cannot determine price - argument is not a state-aware booking instance'), null, null
             );
         }
-
-        try {
-            $booking = $this->_normalizeContainer($booking);
-        } catch (InvalidArgumentException $exception) {
-            throw $this->_createRuntimeException(
-                $this->__('Cannot determine price - booking is not a container'), null, $exception
-            );
-        }
-
-        /* @var $booking BookingInterface|ArrayAccess|ContainerInterface */
 
         $duration  = $this->_normalizeInt($booking->getDuration());
-        $serviceId = $this->_containerGet($booking, 'service_id');
+        $serviceId = $booking->get('service_id');
 
         $b = $this->exprBuilder;
 
