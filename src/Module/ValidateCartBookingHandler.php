@@ -8,6 +8,7 @@ use Dhii\Data\Container\ContainerGetPathCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
 use Dhii\Data\Container\NormalizeKeyCapableTrait;
+use Dhii\Data\TransitionerInterface;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
@@ -20,14 +21,16 @@ use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Dhii\Validation\Exception\ValidationFailedExceptionInterface;
+use Dhii\Validation\ValidatorInterface;
 use EDD_Cart;
 use Exception as RootException;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use RebelCode\Bookings\BookingFactoryInterface;
 use RebelCode\Bookings\BookingInterface;
 use RebelCode\Bookings\Exception\CouldNotTransitionExceptionInterface;
-use RebelCode\Bookings\TransitionerInterface;
 use RebelCode\EddBookings\Logic\Module\BookingTransitionInterface as Transition;
+use RebelCode\Sessions\ValidatorAwareTrait;
 use stdClass;
 
 /**
@@ -37,6 +40,9 @@ use stdClass;
  */
 class ValidateCartBookingHandler implements InvocableInterface
 {
+    /* @since [*next-version*] */
+    use ValidatorAwareTrait;
+
     /* @since [*next-version*] */
     use ContainerGetCapableTrait;
 
@@ -95,6 +101,15 @@ class ValidateCartBookingHandler implements InvocableInterface
     protected $transitioner;
 
     /**
+     * The booking factory.
+     *
+     * @since [*next-version*]
+     *
+     * @var BookingFactoryInterface
+     */
+    protected $bookingFactory;
+
+    /**
      * The bookings SELECT resource model.
      *
      * @since [*next-version*]
@@ -127,23 +142,27 @@ class ValidateCartBookingHandler implements InvocableInterface
      * @since [*next-version*]
      *
      * @param EDD_Cart                                      $eddCart          The EDD cart instance.
-     * @param TransitionerInterface                         $transitioner     The booking transitioner.
+     * @param ValidatorInterface                            $validator        The validator for validating bookings.
+     * @param BookingFactoryInterface                       $bookingFactory   The factory for creating bookings.
      * @param SelectCapableInterface                        $bookingsSelectRm The bookings SELECT resource model.
      * @param array|stdClass|ArrayAccess|ContainerInterface $cartItemConfig   The cart item data config.
      * @param object                                        $exprBuilder      The expression builder.
      */
     public function __construct(
         EDD_Cart $eddCart,
-        TransitionerInterface $transitioner,
+        ValidatorInterface $validator,
+        BookingFactoryInterface $bookingFactory,
         SelectCapableInterface $bookingsSelectRm,
         $exprBuilder,
         $cartItemConfig
     ) {
+        $this->_setValidator($validator);
+
         $this->eddCart          = $eddCart;
-        $this->transitioner     = $transitioner;
         $this->bookingsSelectRm = $bookingsSelectRm;
         $this->exprBuilder      = $exprBuilder;
         $this->cartItemConfig   = $cartItemConfig;
+        $this->bookingFactory = $bookingFactory;
     }
 
     /**
@@ -188,12 +207,16 @@ class ValidateCartBookingHandler implements InvocableInterface
                 );
             }
 
-            // Get the booking
-            $booking = reset($bookings);
+            // Get the booking data
+            $bookingData = reset($bookings);
+            // Create the booking instance
+            $booking = $this->bookingFactory->make([
+                BookingFactoryInterface::K_DATA => $bookingData,
+            ]);
 
             try {
                 // Validate it
-                $this->_validateBooking($booking);
+                $this->_getValidator()->validate($booking);
             } catch (ValidationFailedExceptionInterface $exception) {
                 foreach ($this->_getBookingValidationErrors($exception) as $key => $error) {
                     $this->_addEddCheckoutError($key, $error);
@@ -216,48 +239,6 @@ class ValidateCartBookingHandler implements InvocableInterface
         return [
             'eddbk_unavailable_booking' => $this->__('This booking is not available. Please contact the site administrator for more details'),
         ];
-    }
-
-    /**
-     * Validates a cart item booking.
-     *
-     * @since [*next-version*]
-     *
-     * @param BookingInterface $booking The booking instance.
-     *
-     * @throws ValidationFailedExceptionInterface If the booking is invalid.
-     */
-    protected function _validateBooking(BookingInterface $booking)
-    {
-        try {
-            $this->transitioner->transition($booking, Transition::TRANSITION_SUBMIT);
-        } catch (CouldNotTransitionExceptionInterface $exception) {
-            // Get the validation failure exception
-            $validationException = $this->_resolveValidationFailedException($exception);
-            // If found, throw it
-            if ($validationException instanceof ValidationFailedExceptionInterface) {
-                throw $validationException;
-            }
-        }
-    }
-
-    /**
-     * Retrieves the validation failure exception from an exception's previous exceptions chain.
-     *
-     * @since [*next-version*]
-     *
-     * @param RootException $exception The exception to search.
-     *
-     * @return ValidationFailedExceptionInterface|null The found validation failure exception or null if not found.
-     */
-    protected function _resolveValidationFailedException(RootException $exception)
-    {
-        while ($exception !== null && !($exception instanceof ValidationFailedExceptionInterface)) {
-            $exception = $exception->getPrevious();
-        }
-
-        /* @var $exception ValidationFailedExceptionInterface|null */
-        return $exception;
     }
 
     /**
