@@ -3,6 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/dhii/config-interface" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/dhii/cqrs-resource-model-interface" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/dhii/data-state-abstract" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/dhii/expression-interface" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/dhii/expression-renderer-interface" vcs="Git" />
