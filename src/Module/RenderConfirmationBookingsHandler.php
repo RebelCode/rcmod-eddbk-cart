@@ -2,6 +2,7 @@
 
 namespace RebelCode\EddBookings\Cart\Module;
 
+use ArrayAccess;
 use Carbon\Carbon;
 use Dhii\Cache\SimpleCacheInterface;
 use Dhii\Data\Container\ContainerGetCapableTrait;
@@ -19,10 +20,9 @@ use Dhii\Output\TemplateInterface;
 use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
-use Exception;
+use Psr\Container\ContainerInterface;
 use Psr\EventManager\EventInterface;
-use RebelCode\Bookings\BookingInterface;
-use RuntimeException;
+use stdClass;
 use Traversable;
 
 /**
@@ -189,7 +189,12 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param BookingInterface[]|Traversable $bookings The bookings to render in the table.
+     * @param array|stdClass|Traversable $bookings The list of bookings to render in the table, where each element may
+     *                                             be any of the following types:
+     *                                             * array
+     *                                             * stdClass
+     *                                             * ArrayAccess
+     *                                             * ContainerInterface
      *
      * @return string|Stringable The render output.
      */
@@ -197,12 +202,6 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
     {
         $rows = '';
         foreach ($bookings as $_booking) {
-            if (!($_booking instanceof BookingInterface)) {
-                throw $this->_createOutOfRangeException(
-                    $this->__('Booking is not a valid booking instance'), null, null, $_booking
-                );
-            }
-
             $rows = $this->_renderBookingRow($_booking);
         }
 
@@ -221,17 +220,17 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param BookingInterface $booking The booking instance.
+     * @param array|stdClass|ArrayAccess|ContainerInterface $bookingData The booking data.
      *
      * @return string|Stringable The rendered booking row.
      */
-    protected function _renderBookingRow(BookingInterface $booking)
+    protected function _renderBookingRow($bookingData)
     {
-        $timezone = $this->_getDisplayTimezone($booking);
+        $timezone = $this->_getDisplayTimezone($bookingData);
 
         // Get timestamps from booking
-        $startTs = $booking->getStart();
-        $endTs   = $booking->getEnd();
+        $startTs = $this->_containerGet($bookingData, 'start');
+        $endTs   = $this->_containerGet($bookingData, 'end');
 
         // Create date time helper instances
         $startDt = Carbon::createFromTimestampUTC($startTs);
@@ -247,8 +246,11 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
         $startStr = $startDt->format($this->bookingFormat);
         $endStr   = $endDt->format($this->bookingFormat);
 
+        // ID of the booking's service
+        $serviceId = $this->_containerGet($bookingData, 'service_id');
+
         return $this->bookingRowTemplate->render([
-            'service_name' => $this->_getServiceName($booking),
+            'service_name' => $this->_getServiceName($serviceId),
             'start_text'   => $startStr,
             'end_text'     => $endStr,
             'timezone'     => $timezone->getName(),
@@ -256,33 +258,16 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
     }
 
     /**
-     * Retrieves the name of the service for a booking.
+     * Retrieves the name of the service.
      *
      * @since [*next-version*]
      *
-     * @param BookingInterface $booking The booking instance.
+     * @param int|string|Stringable $serviceId The ID of the service.
      *
      * @return string|Stringable The name of the service.
-     *
-     * @throws RuntimeException If failed to retrieve the service name or the service ID from the booking.
      */
-    protected function _getServiceName(BookingInterface $booking)
+    protected function _getServiceName($serviceId)
     {
-        try {
-            $container = $this->_normalizeContainer($booking);
-            $serviceId = $this->_containerGet($container, 'service_id');
-        } catch (Exception $exception) {
-            /*
-             * Catches:
-             * - Invalid argument exception if the booking is not a container
-             * - Container exception if an error occurred while reading
-             * - Container not found exception if the service ID was not found
-             */
-            throw $this->_createRuntimeException(
-                $this->__('Failed to get the ID of the service for a booking'), null, $exception
-            );
-        }
-
         return $this->serviceNameCache->get($serviceId, function ($serviceId) {
             return $this->_getServiceNameById($serviceId);
         });
