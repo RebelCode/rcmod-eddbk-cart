@@ -7,6 +7,7 @@ use Dhii\Data\Container\ContainerHasCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
 use Dhii\Data\Container\NormalizeKeyCapableTrait;
+use Dhii\Data\StateAwareInterface;
 use Dhii\Data\ValueAwareInterface;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
@@ -14,6 +15,7 @@ use Dhii\Factory\Exception\CreateCouldNotMakeExceptionCapableTrait;
 use Dhii\Factory\FactoryInterface;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
+use RebelCode\Bookings\BookingInterface;
 
 /**
  * The factory for creating booking value-aware objects.
@@ -75,6 +77,15 @@ class BookingValueAwareFactory implements FactoryInterface
         }
 
         $booking = $this->_containerGet($config, static::K_BOOKING);
+
+        if (!($booking instanceof StateAwareInterface) || !($booking instanceof BookingInterface)) {
+            throw $this->_createCouldNotMakeException(
+                $this->__('Booking in factory config is not a state-aware booking'),
+                null,
+                null,
+                $config
+            );
+        }
 
         return new BookingValueAware($booking);
     }

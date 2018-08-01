@@ -3,6 +3,10 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/dhii/config-interface" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/dhii/cqrs-resource-model-interface" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/dhii/data-state-abstract" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/dhii/expression-interface" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/dhii/expression-renderer-interface" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/dhii/file-finder-abstract" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/dhii/iterator-abstract" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/dhii/iterator-interface" vcs="Git" />
@@ -14,18 +18,32 @@
     <mapping directory="$PROJECT_DIR$/vendor/dhii/placeholder-template-abstract" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/dhii/regex-abstract" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/dhii/simple-cache-interface" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/dhii/sql-interface" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/dhii/stringable-helper-base" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/dhii/time-interface" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/dhii/transition-event-interface" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/dhii/type-interface" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/dhii/wp-events" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/johnpbloch/wordpress-core" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/nesbot/carbon" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/rebelcode/booking" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/rebelcode/booking-abstract" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/rebelcode/booking-interface" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/rebelcode/booking-transitioner" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/rebelcode/booking-transitioner-interface" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/rebelcode/event-state-machine" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/rebelcode/expression-wp-query-builder" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/rebelcode/modular" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/rebelcode/module-iterator-abstract" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/rebelcode/rc-booking" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/rebelcode/rc-booking-interface" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/rebelcode/rcmod-booking-logic" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/rebelcode/rcmod-eddbk-booking-logic" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/rebelcode/rcmod-wp-bookings-cqrs" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/rebelcode/session-generator" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/rebelcode/session-generator-interface" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/rebelcode/sql-cqrs-resource-models-abstract" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/rebelcode/wp-cqrs-resource-models" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/satooshi/php-coveralls" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/symfony/config" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/symfony/console" vcs="Git" />
@@ -34,6 +52,7 @@
     <mapping directory="$PROJECT_DIR$/vendor/symfony/finder" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/symfony/polyfill-ctype" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/symfony/process" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/symfony/stopwatch" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/symfony/translation" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/symfony/yaml" vcs="Git" />
   </component>

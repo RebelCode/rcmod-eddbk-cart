@@ -207,7 +207,8 @@ class RemoveBookingFromCartHandler implements InvocableInterface
 
         // If the booking has a cart status, delete it
         $booking = reset($bookings);
-        if ($booking->get('status') === Status::STATUS_IN_CART) {
+
+        if ($this->_containerGet($booking, 'status') === Status::STATUS_IN_CART) {
             $this->bookingsDeleteRm->delete($c);
         }
     }

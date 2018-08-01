@@ -26,7 +26,6 @@ use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Psr\Container\ContainerInterface;
 use Psr\EventManager\EventInterface;
-use RebelCode\Bookings\BookingInterface;
 use stdClass;
 
 /**
@@ -189,18 +188,18 @@ class RenderCartBookingInfoHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param BookingInterface $booking The booking.
+     * @param array|stdClass|ArrayAccess|ContainerInterface $bookingData The booking data.
      *
      * @return string|Stringable The render result.
      */
-    protected function _renderBookingInfo(BookingInterface $booking)
+    protected function _renderBookingInfo($bookingData)
     {
         $format   = $this->_containerGet($this->cartItemConfig, 'booking_datetime_format');
-        $clientTz = $this->_getDisplayTimezone($booking);
+        $clientTz = $this->_getDisplayTimezone($bookingData);
 
         // Get timestamps from booking
-        $startTs = $booking->getStart();
-        $endTs   = $booking->getEnd();
+        $startTs = $this->_containerGet($bookingData, 'start');
+        $endTs   = $this->_containerGet($bookingData, 'end');
 
         // Create date time helper instances
         $startDt = Carbon::createFromTimestampUTC($startTs);

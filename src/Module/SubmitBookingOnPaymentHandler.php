@@ -8,6 +8,8 @@ use Dhii\Data\Container\ContainerGetPathCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
 use Dhii\Data\Container\NormalizeKeyCapableTrait;
+use Dhii\Data\StateAwareFactoryInterface;
+use Dhii\Data\TransitionerInterface;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
@@ -16,6 +18,7 @@ use Dhii\Iterator\CountIterableCapableTrait;
 use Dhii\Iterator\ResolveIteratorCapableTrait;
 use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Storage\Resource\UpdateCapableInterface;
+use Dhii\Util\Normalization\NormalizeArrayCapableTrait;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
@@ -23,9 +26,9 @@ use Dhii\Util\String\StringableInterface as Stringable;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventManager\EventInterface;
-use RebelCode\Bookings\TransitionerInterface;
 use RebelCode\EddBookings\Logic\Module\BookingTransitionInterface as T;
 use stdClass;
+use Traversable;
 
 /**
  * The handler that updates and submits bookings when an EDD payment is complete.
@@ -51,6 +54,9 @@ class SubmitBookingOnPaymentHandler implements InvocableInterface
 
     /* @since [*next-version*] */
     use NormalizeStringCapableTrait;
+
+    /* @since [*next-version*] */
+    use NormalizeArrayCapableTrait;
 
     /* @since [*next-version*] */
     use NormalizeIterableCapableTrait;
@@ -81,6 +87,15 @@ class SubmitBookingOnPaymentHandler implements InvocableInterface
      * @var TransitionerInterface
      */
     protected $transitioner;
+
+    /**
+     * The factory used for creating state-aware bookings.
+     *
+     * @since [*next-version*]
+     *
+     * @var StateAwareFactoryInterface
+     */
+    protected $stateAwareFactory;
 
     /**
      * The bookings SELECT resource model.
@@ -123,24 +138,28 @@ class SubmitBookingOnPaymentHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param TransitionerInterface                         $transitioner     The booking transitioner.
-     * @param SelectCapableInterface                        $bookingsSelectRm The bookings SELECT resource model.
-     * @param UpdateCapableInterface                        $bookingsUpdateRm The bookings UPDATE resource model.
-     * @param array|stdClass|ArrayAccess|ContainerInterface $cartItemConfig   The cart item data config.
-     * @param object                                        $exprBuilder      The expression builder.
+     * @param TransitionerInterface                         $transitioner      The booking transitioner.
+     * @param StateAwareFactoryInterface                    $stateAwareFactory The factory to use for creating
+     *                                                                         state-aware bookings.
+     * @param SelectCapableInterface                        $bookingsSelectRm  The bookings SELECT resource model.
+     * @param UpdateCapableInterface                        $bookingsUpdateRm  The bookings UPDATE resource model.
+     * @param object                                        $exprBuilder       The expression builder.
+     * @param array|stdClass|ArrayAccess|ContainerInterface $cartItemConfig    The cart item data config.
      */
     public function __construct(
         TransitionerInterface $transitioner,
+        StateAwareFactoryInterface $stateAwareFactory,
         SelectCapableInterface $bookingsSelectRm,
         UpdateCapableInterface $bookingsUpdateRm,
         $exprBuilder,
         $cartItemConfig
     ) {
-        $this->transitioner     = $transitioner;
-        $this->bookingsSelectRm = $bookingsSelectRm;
-        $this->bookingsUpdateRm = $bookingsUpdateRm;
-        $this->exprBuilder      = $exprBuilder;
-        $this->cartItemConfig   = $cartItemConfig;
+        $this->transitioner      = $transitioner;
+        $this->stateAwareFactory = $stateAwareFactory;
+        $this->bookingsSelectRm  = $bookingsSelectRm;
+        $this->bookingsUpdateRm  = $bookingsUpdateRm;
+        $this->exprBuilder       = $exprBuilder;
+        $this->cartItemConfig    = $cartItemConfig;
     }
 
     /**
@@ -202,22 +221,50 @@ class SubmitBookingOnPaymentHandler implements InvocableInterface
                 continue;
             }
 
-            // Get the booking
-            $_booking = reset($_bookings);
+            // Get the booking data
+            $_bookingData = reset($_bookings);
+            // Create the booking
+            $_booking = $this->stateAwareFactory->make([
+                StateAwareFactoryInterface::K_DATA => $_bookingData,
+            ]);
+
+            // Transition the booking
             $_booking = $this->transitioner->transition($_booking, T::TRANSITION_SUBMIT);
 
             // Prepare the change set
-            $_changeSet = [
+            $_bookingData = $_booking->getState();
+            $_paymentData = [
                 'payment_id' => $paymentId,
                 'client_id'  => $this->_getPaymentCustomerId($paymentId),
-                'status'     => $_booking->getStatus(),
             ];
+            $_changeSet   = $this->_patchBookingData($_bookingData, $_paymentData);
 
-            // Update booking
+            // Update the booking
             $this->bookingsUpdateRm->update($_changeSet, $_condition);
         }
 
         return;
+    }
+
+    /**
+     * Patches the given booking data with a change set.
+     *
+     * @since [*next-version*]
+     *
+     * @param array|stdClass|Traversable $bookingData The booking data.
+     * @param array|stdClass|Traversable $changeSet   The change set.
+     *
+     * @return array|stdClass|Traversable The patched data.
+     */
+    protected function _patchBookingData($bookingData, $changeSet)
+    {
+        $patched = $this->_normalizeArray($bookingData);
+
+        foreach ($changeSet as $_key => $_val) {
+            $patched[$_key] = $_val;
+        }
+
+        return $patched;
     }
 
     /**
@@ -227,7 +274,7 @@ class SubmitBookingOnPaymentHandler implements InvocableInterface
      *
      * @param int|string $paymentId The payment ID.
      *
-     * @return int|string|Stringable
+     * @return array|stdClass|ArrayAccess|ContainerInterface
      */
     protected function _getPaymentMetaData($paymentId)
     {
