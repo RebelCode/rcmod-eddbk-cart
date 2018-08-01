@@ -5,8 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+### Added
+- Cart items are now assigned a `price_id` that associates them with the selected session length.
+
+### Changed
+- Booking dates and times in the cart are shown in the client timezone, if it is available. 
+
 ### Fixed
-- Added module dependencies `wp_bookings_cqrs` and `booking_logic`.
+- Added missing module dependencies `wp_bookings_cqrs` and `booking_logic`.
 
 ## [0.1-alpha5] - 2018-06-13
 ### Added
@@ -17,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Cart now shows booking info datetimes in the client timezone.
 
 ### Added
-- Booking items in cart now have price ID association.
+- Booking items in cart now have price ID association.=
 
 ## [0.1-alpha3] - 2018-06-11
 ### Fixed
