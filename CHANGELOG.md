@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Booking dates and times in the cart are shown in the client timezone, if it is available. 
 
+### Fixed
+- Added missing module dependencies `wp_bookings_cqrs` and `booking_logic`.
+
+## [0.1-alpha5] - 2018-06-13
+### Added
+- Booking information is now shown on the confirmation (receipt) page.
+
+## [0.1-alpha4] - 2018-06-12
+### Changed
+- Cart now shows booking info datetimes in the client timezone.
+
+### Added
+- Booking items in cart now have price ID association.=
+
 ## [0.1-alpha3] - 2018-06-11
 ### Fixed
 - Bookings in cart no longer show the session length, in seconds, as a price option.

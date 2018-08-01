@@ -1,5 +1,6 @@
 <?php
 
+use Dhii\Cache\MemoryMemoizer;
 use Dhii\Output\PlaceholderTemplate;
 use Dhii\Output\PlaceholderTemplateFactory;
 use Dhii\Output\TemplateFactoryInterface;
@@ -9,8 +10,10 @@ use RebelCode\EddBookings\Cart\BookingValueAwareFactory;
 use RebelCode\EddBookings\Cart\Module\AddBookingToCartHandler;
 use RebelCode\EddBookings\Cart\Module\FilterCartItemNameHandler;
 use RebelCode\EddBookings\Cart\Module\FilterCartItemPriceHandler;
+use RebelCode\EddBookings\Cart\Module\FilterCartItemPriceOptionIdHandler;
 use RebelCode\EddBookings\Cart\Module\RemoveBookingFromCartHandler;
 use RebelCode\EddBookings\Cart\Module\RenderCartBookingInfoHandler;
+use RebelCode\EddBookings\Cart\Module\RenderConfirmationBookingsHandler;
 use RebelCode\EddBookings\Cart\Module\SubmitBookingOnPaymentHandler;
 use RebelCode\EddBookings\Cart\Module\ValidateCartBookingHandler;
 
@@ -31,6 +34,8 @@ return [
      */
     'eddbk_add_booking_to_cart_handler' => function (ContainerInterface $c) {
         return new AddBookingToCartHandler(
+            $c->get('eddbk_services_select_rm'),
+            $c->get('sql_expression_builder'),
             $c->get('edd_cart'),
             $c->get('eddbk_cart/cart_items')
         );
@@ -124,6 +129,33 @@ return [
     },
 
     /*
+     * The handler that renders the bookings in the EDD purchase confirmation page.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_render_confirmation_bookings_handler' => function(ContainerInterface $c) {
+        return new RenderConfirmationBookingsHandler(
+            $c->get('eddbk_cart_service_name_cache'),
+            $c->get('eddbk_confirmation_table_template'),
+            $c->get('eddbk_confirmation_booking_row_template'),
+            $c->get('bookings_select_rm'),
+            $c->get('eddbk_services_select_rm'),
+            $c->get('sql_expression_builder'),
+            $c->get('eddbk_cart/confirmation_page/booking_datetime_format'),
+            $c->get('eddbk_cart/fallback_timezone')
+        );
+    },
+
+    /*
+     * The cache that caches service names by ID.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_cart_service_name_cache' => function (ContainerInterface $c) {
+        return new MemoryMemoizer();
+    },
+
+    /*
      * The factory used to create templates used in this module.
      *
      * @since [*next-version*]
@@ -144,6 +176,36 @@ return [
      */
     'eddbk_cart_booking_info_template' => function (ContainerInterface $c) {
         $templateFile = $c->get('eddbk_cart/cart_items/templates/booking_info');
+        $templatePath = EDDBK_CART_MODULE_TEMPLATES_DIR . DIRECTORY_SEPARATOR . $templateFile;
+        $template = file_get_contents($templatePath);
+
+        return $c->get('eddbk_cart_template_factory')->make([
+            TemplateFactoryInterface::K_TEMPLATE => $template
+        ]);
+    },
+
+    /*
+     * The template for the bookings table in the purchase confirmation page.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_confirmation_table_template' => function(ContainerInterface $c) {
+        $templateFile = $c->get('eddbk_cart/confirmation_page/templates/table');
+        $templatePath = EDDBK_CART_MODULE_TEMPLATES_DIR . DIRECTORY_SEPARATOR . $templateFile;
+        $template = file_get_contents($templatePath);
+
+        return $c->get('eddbk_cart_template_factory')->make([
+            TemplateFactoryInterface::K_TEMPLATE => $template
+        ]);
+    },
+
+    /*
+     * The template for the bookings rows in the purchase confirmation page bookings table.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_confirmation_booking_row_template' => function(ContainerInterface $c) {
+        $templateFile = $c->get('eddbk_cart/confirmation_page/templates/booking_row');
         $templatePath = EDDBK_CART_MODULE_TEMPLATES_DIR . DIRECTORY_SEPARATOR . $templateFile;
         $template = file_get_contents($templatePath);
 

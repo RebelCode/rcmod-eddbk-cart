@@ -13,6 +13,10 @@ use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
+use Dhii\Iterator\CountIterableCapableTrait;
+use Dhii\Iterator\ResolveIteratorCapableTrait;
+use Dhii\Storage\Resource\SelectCapableInterface;
+use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
@@ -38,6 +42,15 @@ class AddBookingToCartHandler implements InvocableInterface
 
     /* @since [*next-version*] */
     use ContainerGetPathCapableTrait;
+
+    /* @since [*next-version*] */
+    use CountIterableCapableTrait;
+
+    /* @since [*next-version*] */
+    use ResolveIteratorCapableTrait;
+
+    /* @since [*next-version*] */
+    use NormalizeIntCapableTrait;
 
     /* @since [*next-version*] */
     use NormalizeKeyCapableTrait;
@@ -67,6 +80,24 @@ class AddBookingToCartHandler implements InvocableInterface
     use StringTranslatingTrait;
 
     /**
+     * The services SELECT resource model.
+     *
+     * @since [*next-version*]
+     *
+     * @var SelectCapableInterface
+     */
+    protected $servicesSelectRm;
+
+    /**
+     * The expression builder.
+     *
+     * @since [*next-version*]
+     *
+     * @var object
+     */
+    protected $exprBuilder;
+
+    /**
      * The EDD cart instance.
      *
      * @since [*next-version*]
@@ -89,13 +120,17 @@ class AddBookingToCartHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param EDD_Cart          $eddCart        The EDD cart instance.
-     * @param Stringable|string $cartItemConfig The cart item data config.
+     * @param SelectCapableInterface $servicesSelectRm The services SELECT resource model.
+     * @param object                 $exprBuilder      The expression builder.
+     * @param EDD_Cart               $eddCart          The EDD cart instance.
+     * @param Stringable|string      $cartItemConfig   The cart item data config.
      */
-    public function __construct(EDD_Cart $eddCart, $cartItemConfig)
+    public function __construct($servicesSelectRm, $exprBuilder, EDD_Cart $eddCart, $cartItemConfig)
     {
-        $this->eddCart        = $eddCart;
-        $this->cartItemConfig = $cartItemConfig;
+        $this->servicesSelectRm = $servicesSelectRm;
+        $this->exprBuilder      = $exprBuilder;
+        $this->eddCart          = $eddCart;
+        $this->cartItemConfig   = $cartItemConfig;
     }
 
     /**
@@ -151,15 +186,54 @@ class AddBookingToCartHandler implements InvocableInterface
         // Get the cart item data keys from the cart item config
         $eddBkKey     = $this->_containerGetPath($this->cartItemConfig, ['data', 'eddbk_key']);
         $bookingIdKey = $this->_containerGetPath($this->cartItemConfig, ['data', 'booking_id_key']);
+        $priceIdKey   = $this->_containerGetPath($this->cartItemConfig, ['data', 'price_id_key']);
+
+        // Find the price ID
+        $service  = $this->_getServiceById($serviceId);
+        $lengths  = $this->_containerGet($service, 'session_lengths');
+        $duration = $booking->getDuration();
+        $priceId  = null;
+        foreach ($lengths as $_idx => $_lengthInfo) {
+            $_length = (int) $this->_containerGet($_lengthInfo, 'sessionLength');
+
+            if ($_length === $duration) {
+                $priceId = $_idx;
+                break;
+            }
+        }
 
         // Create the cart item data
         $data = [
-            $eddBkKey => [
+            $priceIdKey => $priceId,
+            $eddBkKey   => [
                 $bookingIdKey => $bookingId,
             ],
         ];
 
         // Add the service (EDD Download) to the cart with the additional EDD Bookings data
         $this->eddCart->add($serviceId, $data);
+    }
+
+    /**
+     * Retrieves a booking by ID.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string|Stringable $serviceId The ID of the service to retrieve.
+     *
+     * @return array|stdClass|ArrayAccess|ContainerInterface|null The service instance, or null if no service was
+     *                                                            found for the given ID.
+     */
+    protected function _getServiceById($serviceId)
+    {
+        $b = $this->exprBuilder;
+
+        $services = $this->servicesSelectRm->select(
+            $b->and(
+                $b->eq($b->ef('service', 'id'), $b->lit($serviceId))
+            )
+        );
+
+        return reset($services) ?: null;
     }
 }

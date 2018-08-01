@@ -16,6 +16,7 @@
         "rebelcode/modular": "^0.1-alpha1",
         "dhii/evaluable-interface": "^0.1-alpha1",
         "dhii/placeholder-template": "^0.1-alpha2",
+        "dhii/memoize-memory": "^0.2-alpha1",
         "nesbot/carbon": "^1.29.0"
     },
     "require-dev": {
@@ -23,7 +24,9 @@
         "ptrofimov/xpmock": "^1.1",
         "dhii/php-cs-fixer-config": "^0.1",
         "codeclimate/php-test-reporter": "<=0.3.2",
+        "rebelcode/rcmod-booking-logic": "^0.1-alpha1",
         "rebelcode/rcmod-eddbk-booking-logic": "^0.1-alpha1",
+        "rebelcode/rcmod-wp-bookings-cqrs": "^0.1-alpha1",
         "rebelcode/booking-interface": "^0.1-alpha1",
         "rebelcode/booking-transitioner-interface": "^0.1-alpha1",
         "dhii/cqrs-resource-model-interface": "^0.1-alpha2",

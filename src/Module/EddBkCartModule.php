@@ -90,5 +90,8 @@ class EddBkCartModule extends AbstractBaseModule
 
         // Attach the handler that renders booking into in the EDD cart
         $this->_attach('edd_checkout_cart_item_title_after', $c->get('eddbk_render_cart_booking_info_handler'));
+
+        // Attach the handler that renders booking information in the purchase confirmation page
+        $this->_attach('edd_payment_receipt_after_table', $c->get('eddbk_render_confirmation_bookings_handler'));
     }
 }

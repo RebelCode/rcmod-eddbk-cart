@@ -27,6 +27,13 @@ return [
                 'key' => 'options',
 
                 /*
+                 * The key used in cart item data to store the price option ID.
+                 *
+                 * @since [*next-version*]
+                 */
+                'price_id_key' => 'price_id',
+
+                /*
                  * The main key used in cart item data by EDD Bookings.
                  *
                  * @since [*next-version*]
@@ -62,12 +69,48 @@ return [
             ],
         ],
         /*
+         * Configuration for the purchase confirmation page.
+         *
+         * @since [*next-version*]
+         */
+        'confirmation_page' => [
+            /*
+             * The datetime format to use when rendering booking dates and times in the confirmation page.
+             *
+             * @since [*next-version*]
+             */
+            'booking_datetime_format' => 'D, jS M Y, H:i',
+
+            /*
+             * Templates used in the confirmation page.
+             *
+             * @since [*next-version*]
+             */
+            'templates' => [
+                /*
+                 * The template for the bookings table in the confirmation page.
+                 *
+                 * @since [*next-version*]
+                 */
+                'table' => 'confirmation-table.html',
+
+                /*
+                 * The template for the bookings table rows in the confirmation page.
+                 *
+                 * @since [*next-version*]
+                 */
+                'booking_row' => 'confirmation-booking-row.html',
+            ],
+        ],
+
+        /*
          * Optional default timezone to fallback to, for bookings without a timezone.
          * If not given, the fallback timezone is deduced from WordPress or the server.
          *
          * @since [*next-version*]
          */
         'fallback_timezone' => '',
+
         /*
          * Configuration for placeholder templates.
          */
