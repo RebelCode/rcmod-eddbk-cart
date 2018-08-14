@@ -119,7 +119,7 @@ class BookingPriceEvaluator implements EvaluableInterface
         }
 
         $duration  = $this->_normalizeInt($booking->getDuration());
-        $serviceId = $booking->get('service_id');
+        $serviceId = $booking->getState()->get('service_id');
 
         $b = $this->exprBuilder;
 
