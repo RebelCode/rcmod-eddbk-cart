@@ -125,7 +125,21 @@ trait GetBookingDisplayTimezoneCapableTrait
      */
     protected function _getWordPressTimezone()
     {
-        return $this->_createDateTimeZone($this->_getWordPressOption('timezone_string'));
+        $wpTimezone = $this->_getWordPressOption('timezone_string');
+
+        if (empty($wpTimezone)) {
+            // Get GMT offset
+            $gmtOffset = (float) $this->_getWordPressOption('gmt_offset');
+            // Convert into a time decimal (ex. 2.5 => 2.3) with the decimal part being in minutes
+            $hours   = intval($gmtOffset);
+            $minutes = 0.6 * ($gmtOffset - $hours);
+            $decimal = $hours + $minutes;
+
+            // Convert into a UTC timezone
+            $wpTimezone = sprintf('UTC%+05.0f', $decimal * 100);
+        }
+
+        return $this->_createDateTimeZone($wpTimezone);
     }
 
     /**
