@@ -101,7 +101,7 @@ trait GetBookingDisplayTimezoneCapableTrait
     {
         $clientTzName = $this->_containerGet($bookingData, 'client_tz');
 
-        return new DateTimeZone($clientTzName);
+        return $this->_createDateTimeZone($clientTzName);
     }
 
     /**
@@ -113,7 +113,7 @@ trait GetBookingDisplayTimezoneCapableTrait
      */
     protected function _getFallbackTimezone()
     {
-        return new DateTimeZone($this->_normalizeString($this->fallbackTz));
+        return $this->_createDateTimeZone($this->_normalizeString($this->fallbackTz));
     }
 
     /**
@@ -125,7 +125,7 @@ trait GetBookingDisplayTimezoneCapableTrait
      */
     protected function _getWordPressTimezone()
     {
-        return new DateTimeZone($this->_getWordPressOption('timezone_string'));
+        return $this->_createDateTimeZone($this->_getWordPressOption('timezone_string'));
     }
 
     /**
@@ -137,7 +137,34 @@ trait GetBookingDisplayTimezoneCapableTrait
      */
     protected function _getServerTimezone()
     {
-        return new DateTimeZone(date_default_timezone_get());
+        return $this->_createDateTimeZone(date_default_timezone_get());
+    }
+
+    /**
+     * Creates a {@link DateTimeZone} object for a timezone, by name.
+     *
+     * @see DateTimeZone
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable $tzName The name of the timezone.
+     *
+     * @return DateTimeZone The created {@link DateTimeZone} instance.
+     */
+    protected function _createDateTimeZone($tzName)
+    {
+        $tzName = $this->_normalizeString($tzName);
+
+        // If the timezone is a UTC offset timezone, transform into a valid DateTimeZone offset.
+        // See http://php.net/manual/en/datetimezone.construct.php
+        if (preg_match('/^UTC(\+|\-)(\d{1,2})(:?(\d{2}))?$/', $tzName, $matches) && count($matches) >= 2) {
+            $sign    = $matches[1];
+            $hours   = (int) $matches[2];
+            $minutes = count($matches) >= 4 ? (int) $matches[4] : 0;
+            $tzName  = sprintf('%s%02d%02d', $sign, $hours, $minutes);
+        }
+
+        return new DateTimeZone($tzName);
     }
 
     /**
