@@ -51,6 +51,9 @@ class RenderCartBookingInfoHandler implements InvocableInterface
     use CountIterableCapableTrait;
 
     /* @since [*next-version*] */
+    use NormalizeTimezoneNameCapableTrait;
+
+    /* @since [*next-version*] */
     use NormalizeIntCapableTrait;
 
     /* @since [*next-version*] */
@@ -223,7 +226,7 @@ class RenderCartBookingInfoHandler implements InvocableInterface
             'end_datetime'   => $endTs,
             'start_text'     => $startStr,
             'end_text'       => $endStr,
-            'timezone_text'  => $clientTz->getName()
+            'timezone_text'  => $this->_normalizeTimezoneName($clientTz->getName())
         ]);
     }
 }

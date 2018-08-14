@@ -42,6 +42,9 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
     use ContainerGetCapableTrait;
 
     /* @since [*next-version*] */
+    use NormalizeTimezoneNameCapableTrait;
+
+    /* @since [*next-version*] */
     use NormalizeKeyCapableTrait;
 
     /* @since [*next-version*] */
@@ -253,7 +256,7 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
             'service_name' => $this->_getServiceName($serviceId),
             'start_text'   => $startStr,
             'end_text'     => $endStr,
-            'timezone'     => $timezone->getName(),
+            'timezone'     => $this->_normalizeTimezoneName($timezone->getName()),
         ]);
     }
 
