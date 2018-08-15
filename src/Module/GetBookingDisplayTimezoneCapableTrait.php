@@ -106,7 +106,11 @@ trait GetBookingDisplayTimezoneCapableTrait
      */
     protected function _getBookingClientTimezone($bookingData)
     {
-        if (!$this->_containerHas($bookingData, 'client_tz')) {
+        $clientTz = $this->_containerHas($bookingData, 'client_tz')
+            ? $this->_containerGet($bookingData, 'client_tz')
+            : null;
+
+        if (empty($clientTz)) {
             return null;
         }
 
