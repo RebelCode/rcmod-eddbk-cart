@@ -110,7 +110,7 @@ trait GetBookingDisplayTimezoneCapableTrait
             ? $this->_containerGet($bookingData, 'client_tz')
             : null;
 
-        if (empty($clientTz)) {
+        if (strlen($clientTz) == 0) {
             return null;
         }
 
@@ -133,7 +133,7 @@ trait GetBookingDisplayTimezoneCapableTrait
     {
         $fallbackTz = $this->_normalizeString($this->fallbackTz);
 
-        if (empty($fallbackTz)) {
+        if (strlen($fallbackTz) == 0) {
             return null;
         }
 
@@ -153,14 +153,14 @@ trait GetBookingDisplayTimezoneCapableTrait
     {
         $wpTimezone = $this->_getWordPressOption('timezone_string', '');
         // Return the timezone with this name if not empty
-        if (!empty($wpTimezone)) {
+        if (strlen($wpTimezone) > 0) {
             return $this->_createDateTimeZone($wpTimezone);
         }
 
         // Get GMT offset as a fallback
         $gmtOffset = (float) $this->_getWordPressOption('gmt_offset', '');
         // Return null if empty
-        if (empty($gmtOffset)) {
+        if (strlen($gmtOffset) == 0) {
             return null;
         }
 
@@ -188,7 +188,7 @@ trait GetBookingDisplayTimezoneCapableTrait
     {
         $serverTz = date_default_timezone_get();
 
-        if (empty($serverTz)) {
+        if (strlen($serverTz) == 0) {
             return null;
         }
 
