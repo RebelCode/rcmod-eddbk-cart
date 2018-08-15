@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+### Fixed
+- Fatal error for undefined method call when calculating a cart booking's price.
 
 ## [0.1-alpha6] - 2018-08-01
 ### Added
