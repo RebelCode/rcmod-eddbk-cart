@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [[*next-version*]] - YYYY-MM-DD
 ### Fixed
 - Incorrect booking timezone used for displaying booking info in the cart and confirmation page.
+- Fatal error for undefined method call when calculating a cart booking's price.
 
 ## [0.1-alpha6] - 2018-08-01
 ### Added
