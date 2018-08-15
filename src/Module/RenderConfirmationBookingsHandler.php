@@ -6,6 +6,7 @@ use ArrayAccess;
 use Carbon\Carbon;
 use Dhii\Cache\SimpleCacheInterface;
 use Dhii\Data\Container\ContainerGetCapableTrait;
+use Dhii\Data\Container\ContainerHasCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
 use Dhii\Data\Container\NormalizeContainerCapableTrait;
@@ -40,6 +41,12 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
 
     /* @since [*next-version*] */
     use ContainerGetCapableTrait;
+
+    /* @since [*next-version*] */
+    use ContainerHasCapableTrait;
+
+    /* @since [*next-version*] */
+    use NormalizeTimezoneNameCapableTrait;
 
     /* @since [*next-version*] */
     use NormalizeKeyCapableTrait;
@@ -253,7 +260,7 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
             'service_name' => $this->_getServiceName($serviceId),
             'start_text'   => $startStr,
             'end_text'     => $endStr,
-            'timezone'     => $timezone->getName(),
+            'timezone'     => $this->_normalizeTimezoneName($timezone->getName()),
         ]);
     }
 

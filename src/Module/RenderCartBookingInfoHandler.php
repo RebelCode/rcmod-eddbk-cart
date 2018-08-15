@@ -6,6 +6,7 @@ use ArrayAccess;
 use Carbon\Carbon;
 use Dhii\Data\Container\ContainerGetCapableTrait;
 use Dhii\Data\Container\ContainerGetPathCapableTrait;
+use Dhii\Data\Container\ContainerHasCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
 use Dhii\Data\Container\Exception\NotFoundExceptionInterface;
@@ -48,7 +49,13 @@ class RenderCartBookingInfoHandler implements InvocableInterface
     use ContainerGetCapableTrait;
 
     /* @since [*next-version*] */
+    use ContainerHasCapableTrait;
+
+    /* @since [*next-version*] */
     use CountIterableCapableTrait;
+
+    /* @since [*next-version*] */
+    use NormalizeTimezoneNameCapableTrait;
 
     /* @since [*next-version*] */
     use NormalizeIntCapableTrait;
@@ -223,7 +230,7 @@ class RenderCartBookingInfoHandler implements InvocableInterface
             'end_datetime'   => $endTs,
             'start_text'     => $startStr,
             'end_text'       => $endStr,
-            'timezone_text'  => $clientTz->getName()
+            'timezone_text'  => $this->_normalizeTimezoneName($clientTz->getName())
         ]);
     }
 }

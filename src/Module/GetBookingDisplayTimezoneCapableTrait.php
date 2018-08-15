@@ -8,6 +8,7 @@ use Dhii\Util\String\StringableInterface as Stringable;
 use Exception;
 use Exception as RootException;
 use InvalidArgumentException;
+use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\ContainerInterface as BaseContainerInterface;
@@ -68,6 +69,8 @@ trait GetBookingDisplayTimezoneCapableTrait
      * @param array|stdClass|ArrayAccess|ContainerInterface $bookingData The booking data.
      *
      * @return DateTimeZone The timezone instance.
+     *
+     * @throws OutOfRangeException If one of the attempted timezones is invalid.
      */
     protected function _getDisplayTimezone($bookingData)
     {
@@ -77,14 +80,16 @@ trait GetBookingDisplayTimezoneCapableTrait
             [$this, '_getWordPressTimezone'],
         ];
 
+        // Try all, until a non-null timezone is retrieved
         foreach ($try as $_callable) {
-            try {
-                return call_user_func_array($_callable, [$bookingData]);
-            } catch (Exception $exception) {
-                continue;
+            $_tz = call_user_func_array($_callable, [$bookingData]);
+
+            if ($_tz !== null) {
+                return $_tz;
             }
         }
 
+        // Final fallback
         return $this->_getServerTimezone();
     }
 
@@ -95,13 +100,24 @@ trait GetBookingDisplayTimezoneCapableTrait
      *
      * @param array|stdClass|ArrayAccess|ContainerInterface $bookingData The booking data.
      *
-     * @return DateTimeZone The timezone instance.
+     * @return DateTimeZone|null The timezone instance, or null if the booking does not have a client timezone set.
+     *
+     * @throws OutOfRangeException If the booking client's timezone is invalid.
      */
     protected function _getBookingClientTimezone($bookingData)
     {
-        $clientTzName = $this->_containerGet($bookingData, 'client_tz');
+        $clientTz = $this->_containerHas($bookingData, 'client_tz')
+            ? $this->_containerGet($bookingData, 'client_tz')
+            : null;
 
-        return new DateTimeZone($clientTzName);
+        if (strlen($clientTz) == 0) {
+            return null;
+        }
+
+        $clientTz = $this->_containerGet($bookingData, 'client_tz');
+        $timezone = $this->_createDateTimeZone($clientTz);
+
+        return $timezone;
     }
 
     /**
@@ -109,11 +125,19 @@ trait GetBookingDisplayTimezoneCapableTrait
      *
      * @since [*next-version*]
      *
-     * @return DateTimeZone The timezone instance.
+     * @return DateTimeZone|null The timezone instance, or null if no fallback timezone is set.
+     *
+     * @throws OutOfRangeException If the fallback timezone is invalid.
      */
     protected function _getFallbackTimezone()
     {
-        return new DateTimeZone($this->_normalizeString($this->fallbackTz));
+        $fallbackTz = $this->_normalizeString($this->fallbackTz);
+
+        if (strlen($fallbackTz) == 0) {
+            return null;
+        }
+
+        return $this->_createDateTimeZone($fallbackTz);
     }
 
     /**
@@ -121,11 +145,34 @@ trait GetBookingDisplayTimezoneCapableTrait
      *
      * @since [*next-version*]
      *
-     * @return DateTimeZone The timezone instance.
+     * @return DateTimeZone|null The timezone instance, or null if the WordPress timezone is not set.
+     *
+     * @throws OutOfRangeException If the WordPress timezonoe is invalid.
      */
     protected function _getWordPressTimezone()
     {
-        return new DateTimeZone($this->_getWordPressOption('timezone_string'));
+        $wpTimezone = $this->_getWordPressOption('timezone_string', '');
+        // Return the timezone with this name if not empty
+        if (strlen($wpTimezone) > 0) {
+            return $this->_createDateTimeZone($wpTimezone);
+        }
+
+        // Get GMT offset as a fallback
+        $gmtOffset = (float) $this->_getWordPressOption('gmt_offset', '');
+        // Return null if empty
+        if (strlen($gmtOffset) == 0) {
+            return null;
+        }
+
+        // Convert into a time decimal (ex. 2.5 => 2.3) with the decimal part being in minutes
+        $hours   = intval($gmtOffset);
+        $minutes = 0.6 * ($gmtOffset - $hours);
+        $decimal = $hours + $minutes;
+
+        // Convert into a UTC timezone
+        $wpTimezone = sprintf('UTC%+05.0f', $decimal * 100);
+
+        return $this->_createDateTimeZone($wpTimezone);
     }
 
     /**
@@ -133,11 +180,56 @@ trait GetBookingDisplayTimezoneCapableTrait
      *
      * @since [*next-version*]
      *
-     * @return DateTimeZone The timezone instance.
+     * @return DateTimeZone|null The timezone instance, or null if no server timezone is set.
+     *
+     * @throws OutOfRangeException If the server timezone is invalid.
      */
     protected function _getServerTimezone()
     {
-        return new DateTimeZone(date_default_timezone_get());
+        $serverTz = date_default_timezone_get();
+
+        if (strlen($serverTz) == 0) {
+            return null;
+        }
+
+        return $this->_createDateTimeZone($serverTz);
+    }
+
+    /**
+     * Creates a {@link DateTimeZone} object for a timezone, by name.
+     *
+     * @see DateTimeZone
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable $tzName The name of the timezone.
+     *
+     * @return DateTimeZone The created {@link DateTimeZone} instance.
+     *
+     * @throws InvalidArgumentException If the timezone name is not a string or stringable object.
+     * @throws OutOfRangeException If the timezone name is invalid and does not represent a valid timezone.
+     */
+    protected function _createDateTimeZone($tzName)
+    {
+        $argTz  = $tzName;
+        $tzName = $this->_normalizeString($tzName);
+
+        // If the timezone is a UTC offset timezone, transform into a valid DateTimeZone offset.
+        // See http://php.net/manual/en/datetimezone.construct.php
+        if (preg_match('/^UTC(\+|\-)(\d{1,2})(:?(\d{2}))?$/', $tzName, $matches) && count($matches) >= 2) {
+            $sign    = $matches[1];
+            $hours   = (int) $matches[2];
+            $minutes = count($matches) >= 4 ? (int) $matches[4] : 0;
+            $tzName  = sprintf('%s%02d%02d', $sign, $hours, $minutes);
+        }
+
+        try {
+            return new DateTimeZone($tzName);
+        } catch (Exception $exception) {
+            throw $this->_createOutOfRangeException(
+                $this->__('Invalid timezone name: "%1$s"', [$argTz]), null, $exception, $argTz
+            );
+        }
     }
 
     /**
@@ -188,6 +280,21 @@ trait GetBookingDisplayTimezoneCapableTrait
     abstract protected function _containerGet($container, $key);
 
     /**
+     * Checks for a key on a container.
+     *
+     * @since [*next-version*]
+     *
+     * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The container to check.
+     * @param string|int|float|bool|Stringable                  $key       The key to check for.
+     *
+     * @throws ContainerExceptionInterface If an error occurred while checking the container.
+     * @throws OutOfRangeException         If the container or the key is invalid.
+     *
+     * @return bool True if the container has an entry for the given key, false if not.
+     */
+    abstract protected function _containerHas($container, $key);
+
+    /**
      * Normalizes a container.
      *
      * @since [*next-version*]
@@ -215,6 +322,25 @@ trait GetBookingDisplayTimezoneCapableTrait
      * @return InvalidArgumentException The new exception.
      */
     abstract protected function _createInvalidArgumentException(
+        $message = null,
+        $code = null,
+        RootException $previous = null,
+        $argument = null
+    );
+
+    /**
+     * Creates a new Dhii Out Of Range exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable|int|float|bool|null $message  The message, if any.
+     * @param int|float|string|Stringable|null      $code     The numeric error code, if any.
+     * @param RootException|null                    $previous The inner exception, if any.
+     * @param mixed|null                            $argument The value that is out of range, if any.
+     *
+     * @return OutOfRangeException The new exception.
+     */
+    abstract protected function _createOutOfRangeException(
         $message = null,
         $code = null,
         RootException $previous = null,
