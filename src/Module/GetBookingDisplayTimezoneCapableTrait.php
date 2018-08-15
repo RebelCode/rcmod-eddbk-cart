@@ -164,9 +164,13 @@ trait GetBookingDisplayTimezoneCapableTrait
      * @param string|Stringable $tzName The name of the timezone.
      *
      * @return DateTimeZone The created {@link DateTimeZone} instance.
+     *
+     * @throws InvalidArgumentException If the timezone name is not a string or stringable object.
+     * @throws OutOfRangeException If the timezone name is invalid and does not represent a valid timezone.
      */
     protected function _createDateTimeZone($tzName)
     {
+        $argTz  = $tzName;
         $tzName = $this->_normalizeString($tzName);
 
         // If the timezone is a UTC offset timezone, transform into a valid DateTimeZone offset.
@@ -178,7 +182,13 @@ trait GetBookingDisplayTimezoneCapableTrait
             $tzName  = sprintf('%s%02d%02d', $sign, $hours, $minutes);
         }
 
-        return new DateTimeZone($tzName);
+        try {
+            return new DateTimeZone($tzName);
+        } catch (Exception $exception) {
+            throw $this->_createOutOfRangeException(
+                $this->__('Invalid timezone name: "%1$s"', [$argTz]), null, $exception, $argTz
+            );
+        }
     }
 
     /**
@@ -256,6 +266,25 @@ trait GetBookingDisplayTimezoneCapableTrait
      * @return InvalidArgumentException The new exception.
      */
     abstract protected function _createInvalidArgumentException(
+        $message = null,
+        $code = null,
+        RootException $previous = null,
+        $argument = null
+    );
+
+    /**
+     * Creates a new Dhii Out Of Range exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable|int|float|bool|null $message  The message, if any.
+     * @param int|float|string|Stringable|null      $code     The numeric error code, if any.
+     * @param RootException|null                    $previous The inner exception, if any.
+     * @param mixed|null                            $argument The value that is out of range, if any.
+     *
+     * @return OutOfRangeException The new exception.
+     */
+    abstract protected function _createOutOfRangeException(
         $message = null,
         $code = null,
         RootException $previous = null,
