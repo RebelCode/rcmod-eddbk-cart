@@ -8,6 +8,7 @@ use Dhii\Util\String\StringableInterface as Stringable;
 use Exception;
 use Exception as RootException;
 use InvalidArgumentException;
+use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\ContainerInterface as BaseContainerInterface;
@@ -68,6 +69,8 @@ trait GetBookingDisplayTimezoneCapableTrait
      * @param array|stdClass|ArrayAccess|ContainerInterface $bookingData The booking data.
      *
      * @return DateTimeZone The timezone instance.
+     *
+     * @throws OutOfRangeException If one of the attempted timezones is invalid.
      */
     protected function _getDisplayTimezone($bookingData)
     {
@@ -77,14 +80,16 @@ trait GetBookingDisplayTimezoneCapableTrait
             [$this, '_getWordPressTimezone'],
         ];
 
+        // Try all, until a non-null timezone is retrieved
         foreach ($try as $_callable) {
-            try {
-                return call_user_func_array($_callable, [$bookingData]);
-            } catch (Exception $exception) {
-                continue;
+            $_tz = call_user_func_array($_callable, [$bookingData]);
+
+            if ($_tz !== null) {
+                return $_tz;
             }
         }
 
+        // Final fallback
         return $this->_getServerTimezone();
     }
 
@@ -95,13 +100,20 @@ trait GetBookingDisplayTimezoneCapableTrait
      *
      * @param array|stdClass|ArrayAccess|ContainerInterface $bookingData The booking data.
      *
-     * @return DateTimeZone The timezone instance.
+     * @return DateTimeZone|null The timezone instance, or null if the booking does not have a client timezone set.
+     *
+     * @throws OutOfRangeException If the booking client's timezone is invalid.
      */
     protected function _getBookingClientTimezone($bookingData)
     {
-        $clientTzName = $this->_containerGet($bookingData, 'client_tz');
+        if (!$this->_containerHas($bookingData, 'client_tz')) {
+            return null;
+        }
 
-        return $this->_createDateTimeZone($clientTzName);
+        $clientTz = $this->_containerGet($bookingData, 'client_tz');
+        $timezone = $this->_createDateTimeZone($clientTz);
+
+        return $timezone;
     }
 
     /**
@@ -109,11 +121,19 @@ trait GetBookingDisplayTimezoneCapableTrait
      *
      * @since [*next-version*]
      *
-     * @return DateTimeZone The timezone instance.
+     * @return DateTimeZone|null The timezone instance, or null if no fallback timezone is set.
+     *
+     * @throws OutOfRangeException If the fallback timezone is invalid.
      */
     protected function _getFallbackTimezone()
     {
-        return $this->_createDateTimeZone($this->_normalizeString($this->fallbackTz));
+        $fallbackTz = $this->_normalizeString($this->fallbackTz);
+
+        if (empty($fallbackTz)) {
+            return null;
+        }
+
+        return $this->_createDateTimeZone($fallbackTz);
     }
 
     /**
@@ -121,23 +141,32 @@ trait GetBookingDisplayTimezoneCapableTrait
      *
      * @since [*next-version*]
      *
-     * @return DateTimeZone The timezone instance.
+     * @return DateTimeZone|null The timezone instance, or null if the WordPress timezone is not set.
+     *
+     * @throws OutOfRangeException If the WordPress timezonoe is invalid.
      */
     protected function _getWordPressTimezone()
     {
-        $wpTimezone = $this->_getWordPressOption('timezone_string');
-
-        if (empty($wpTimezone)) {
-            // Get GMT offset
-            $gmtOffset = (float) $this->_getWordPressOption('gmt_offset');
-            // Convert into a time decimal (ex. 2.5 => 2.3) with the decimal part being in minutes
-            $hours   = intval($gmtOffset);
-            $minutes = 0.6 * ($gmtOffset - $hours);
-            $decimal = $hours + $minutes;
-
-            // Convert into a UTC timezone
-            $wpTimezone = sprintf('UTC%+05.0f', $decimal * 100);
+        $wpTimezone = $this->_getWordPressOption('timezone_string', '');
+        // Return the timezone with this name if not empty
+        if (!empty($wpTimezone)) {
+            return $this->_createDateTimeZone($wpTimezone);
         }
+
+        // Get GMT offset as a fallback
+        $gmtOffset = (float) $this->_getWordPressOption('gmt_offset', '');
+        // Return null if empty
+        if (empty($gmtOffset)) {
+            return null;
+        }
+
+        // Convert into a time decimal (ex. 2.5 => 2.3) with the decimal part being in minutes
+        $hours   = intval($gmtOffset);
+        $minutes = 0.6 * ($gmtOffset - $hours);
+        $decimal = $hours + $minutes;
+
+        // Convert into a UTC timezone
+        $wpTimezone = sprintf('UTC%+05.0f', $decimal * 100);
 
         return $this->_createDateTimeZone($wpTimezone);
     }
@@ -147,11 +176,19 @@ trait GetBookingDisplayTimezoneCapableTrait
      *
      * @since [*next-version*]
      *
-     * @return DateTimeZone The timezone instance.
+     * @return DateTimeZone|null The timezone instance, or null if no server timezone is set.
+     *
+     * @throws OutOfRangeException If the server timezone is invalid.
      */
     protected function _getServerTimezone()
     {
-        return $this->_createDateTimeZone(date_default_timezone_get());
+        $serverTz = date_default_timezone_get();
+
+        if (empty($serverTz)) {
+            return null;
+        }
+
+        return $this->_createDateTimeZone($serverTz);
     }
 
     /**
@@ -237,6 +274,21 @@ trait GetBookingDisplayTimezoneCapableTrait
      * @return mixed The value mapped to the given key.
      */
     abstract protected function _containerGet($container, $key);
+
+    /**
+     * Checks for a key on a container.
+     *
+     * @since [*next-version*]
+     *
+     * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The container to check.
+     * @param string|int|float|bool|Stringable                  $key       The key to check for.
+     *
+     * @throws ContainerExceptionInterface If an error occurred while checking the container.
+     * @throws OutOfRangeException         If the container or the key is invalid.
+     *
+     * @return bool True if the container has an entry for the given key, false if not.
+     */
+    abstract protected function _containerHas($container, $key);
 
     /**
      * Normalizes a container.
