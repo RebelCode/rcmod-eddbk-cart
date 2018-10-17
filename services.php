@@ -222,8 +222,7 @@ return [
      */
     'eddbk_booking_price_evaluator' => function (ContainerInterface $c) {
         return new BookingPriceEvaluator(
-            $c->get('eddbk_services_select_rm'),
-            $c->get('sql_expression_builder')
+            $c->get('eddbk_services_manager')
         );
     },
 
