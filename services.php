@@ -34,8 +34,7 @@ return [
      */
     'eddbk_add_booking_to_cart_handler' => function (ContainerInterface $c) {
         return new AddBookingToCartHandler(
-            $c->get('eddbk_services_select_rm'),
-            $c->get('sql_expression_builder'),
+            $c->get('eddbk_services_manager'),
             $c->get('edd_cart'),
             $c->get('eddbk_cart/cart_items')
         );
