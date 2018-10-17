@@ -94,8 +94,7 @@ return [
      */
     'eddbk_filter_cart_item_name_handler' => function (ContainerInterface $c) {
         return new FilterCartItemNameHandler(
-            $c->get('eddbk_services_select_rm'),
-            $c->get('sql_expression_builder')
+            $c->get('eddbk_services_manager')
         );
     },
 
