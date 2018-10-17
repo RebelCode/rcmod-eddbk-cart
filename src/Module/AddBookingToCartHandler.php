@@ -28,7 +28,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventManager\EventInterface;
 use RebelCode\Bookings\StateAwareBookingInterface;
 use RebelCode\EddBookings\Logic\Module\BookingTransitionInterface as Transition;
-use RebelCode\Entity\EntityManagerInterface;
+use RebelCode\Entity\GetCapableManagerInterface;
 use RuntimeException;
 use stdClass;
 
@@ -85,11 +85,11 @@ class AddBookingToCartHandler implements InvocableInterface
     use StringTranslatingTrait;
 
     /**
-     * The services manager.
+     * The services manager for retrieving services by ID.
      *
      * @since [*next-version*]
      *
-     * @var EntityManagerInterface
+     * @var GetCapableManagerInterface
      */
     protected $servicesManager;
 
@@ -116,11 +116,11 @@ class AddBookingToCartHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param EntityManagerInterface $servicesManager The services manager.
-     * @param EDD_Cart               $eddCart         The EDD cart instance.
-     * @param Stringable|string      $cartItemConfig  The cart item data config.
+     * @param GetCapableManagerInterface $servicesManager The services manager for retrieving services by ID.
+     * @param EDD_Cart                   $eddCart         The EDD cart instance.
+     * @param Stringable|string          $cartItemConfig  The cart item data config.
      */
-    public function __construct(EntityManagerInterface $servicesManager, EDD_Cart $eddCart, $cartItemConfig)
+    public function __construct(GetCapableManagerInterface $servicesManager, EDD_Cart $eddCart, $cartItemConfig)
     {
         $this->servicesManager = $servicesManager;
         $this->eddCart         = $eddCart;

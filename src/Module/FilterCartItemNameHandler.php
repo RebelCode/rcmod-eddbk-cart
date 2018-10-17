@@ -13,12 +13,11 @@ use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Iterator\CountIterableCapableTrait;
 use Dhii\Iterator\ResolveIteratorCapableTrait;
-use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventManager\EventInterface;
-use RebelCode\Entity\EntityManagerInterface;
+use RebelCode\Entity\GetCapableManagerInterface;
 
 /**
  * The handler for filtering cart item names to just be the service names.
@@ -64,11 +63,11 @@ class FilterCartItemNameHandler implements InvocableInterface
     use StringTranslatingTrait;
 
     /**
-     * The services manager.
+     * The services manager for retrieving services by ID.
      *
      * @since [*next-version*]
      *
-     * @var EntityManagerInterface
+     * @var GetCapableManagerInterface
      */
     protected $servicesManager;
 
@@ -77,9 +76,9 @@ class FilterCartItemNameHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param EntityManagerInterface $servicesManager The services manager.
+     * @param GetCapableManagerInterface $servicesManager The services manager for retrieving services by ID.
      */
-    public function __construct(EntityManagerInterface $servicesManager)
+    public function __construct(GetCapableManagerInterface $servicesManager)
     {
         $this->servicesManager = $servicesManager;
     }
