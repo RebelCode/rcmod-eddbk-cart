@@ -23,6 +23,7 @@ use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Psr\Container\ContainerInterface;
 use Psr\EventManager\EventInterface;
+use RebelCode\Entity\GetCapableManagerInterface;
 use stdClass;
 use Traversable;
 
@@ -103,13 +104,13 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
     protected $bookingsSelectRm;
 
     /**
-     * The services SELECT resource model.
+     * The services manager for retrieving services by ID.
      *
      * @since [*next-version*]
      *
-     * @var SelectCapableInterface
+     * @var GetCapableManagerInterface
      */
-    protected $servicesSelectRm;
+    protected $servicesManager;
 
     /**
      * The expression builder.
@@ -134,21 +135,21 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param SimpleCacheInterface   $serviceNameCache     The cache for service names.
-     * @param TemplateInterface      $bookingTableTemplate The bookings table template.
-     * @param TemplateInterface      $bookingRowTemplate   The bookings table row template.
-     * @param SelectCapableInterface $bookingsSelectRm     The bookings SELECT resource model.
-     * @param SelectCapableInterface $servicesSelectRm     The services SELECT resource model.
-     * @param object                 $exprBuilder          The expression builder.
-     * @param string|Stringable      $bookingFormat        The bookings date and time format.
-     * @param string|Stringable|null $fallbackTz           The fallback timezone name.
+     * @param SimpleCacheInterface       $serviceNameCache     The cache for service names.
+     * @param TemplateInterface          $bookingTableTemplate The bookings table template.
+     * @param TemplateInterface          $bookingRowTemplate   The bookings table row template.
+     * @param SelectCapableInterface     $bookingsSelectRm     The bookings SELECT resource model.
+     * @param GetCapableManagerInterface $servicesManager      The services manager for retrieving services by ID.
+     * @param object                     $exprBuilder          The expression builder.
+     * @param string|Stringable          $bookingFormat        The bookings date and time format.
+     * @param string|Stringable|null     $fallbackTz           The fallback timezone name.
      */
     public function __construct(
         SimpleCacheInterface $serviceNameCache,
         TemplateInterface $bookingTableTemplate,
         TemplateInterface $bookingRowTemplate,
         SelectCapableInterface $bookingsSelectRm,
-        SelectCapableInterface $servicesSelectRm,
+        GetCapableManagerInterface $servicesManager,
         $exprBuilder,
         $bookingFormat,
         $fallbackTz
@@ -158,7 +159,7 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
         $this->serviceNameCache   = $serviceNameCache;
         $this->bookingRowTemplate = $bookingRowTemplate;
         $this->bookingsSelectRm   = $bookingsSelectRm;
-        $this->servicesSelectRm   = $servicesSelectRm;
+        $this->servicesManager    = $servicesManager;
         $this->exprBuilder        = $exprBuilder;
         $this->bookingFormat      = $bookingFormat;
     }
@@ -276,33 +277,7 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
     protected function _getServiceName($serviceId)
     {
         return $this->serviceNameCache->get($serviceId, function ($serviceId) {
-            return $this->_getServiceNameById($serviceId);
+            return $this->servicesManager->get($serviceId);
         });
-    }
-
-    /**
-     * Retrieves the service name by ID, without using cache.
-     *
-     * @since [*next-version*]
-     *
-     * @param int|string|Stringable $serviceId The service ID.
-     *
-     * @return string|Stringable The service name.
-     */
-    protected function _getServiceNameById($serviceId)
-    {
-        // Alias expression builder
-        $b = $this->exprBuilder;
-        // EDD Bookings' services select RM only supports AND top-level expressions
-        $services = $this->servicesSelectRm->select($b->and(
-            $b->eq(
-                $b->ef('service', 'id'),
-                $b->lit($serviceId)
-            )
-        ));
-
-        $service = reset($services) ? : null;
-
-        return $this->_containerGet($service, 'name');
     }
 }

@@ -140,7 +140,7 @@ return [
             $c->get('eddbk_confirmation_table_template'),
             $c->get('eddbk_confirmation_booking_row_template'),
             $c->get('bookings_select_rm'),
-            $c->get('eddbk_services_select_rm'),
+            $c->get('eddbk_services_manager'),
             $c->get('sql_expression_builder'),
             $c->get('eddbk_cart/confirmation_page/booking_datetime_format'),
             $c->get('eddbk_cart/fallback_timezone')
