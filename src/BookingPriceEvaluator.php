@@ -16,11 +16,12 @@ use Dhii\Exception\CreateRuntimeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Iterator\CountIterableCapableTrait;
 use Dhii\Iterator\ResolveIteratorCapableTrait;
-use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
+use Psr\Container\NotFoundExceptionInterface;
 use RebelCode\Bookings\BookingInterface;
+use RebelCode\Entity\GetCapableManagerInterface;
 
 /**
  * Evaluates booking prices.
@@ -72,35 +73,24 @@ class BookingPriceEvaluator implements EvaluableInterface
     use StringTranslatingTrait;
 
     /**
-     * The services SELECT resource model.
+     * The services manager for retrieving services by ID.
      *
      * @since [*next-version*]
      *
-     * @var SelectCapableInterface
+     * @var GetCapableManagerInterface
      */
-    protected $servicesSelectRm;
-
-    /**
-     * The expression builder.
-     *
-     * @since [*next-version*]
-     *
-     * @var object
-     */
-    protected $exprBuilder;
+    protected $servicesManager;
 
     /**
      * Constructor.
      *
      * @since [*next-version*]
      *
-     * @param SelectCapableInterface $servicesSelectRm The services SELECT resource model.
-     * @param object                 $exprBuilder      The expression builder.
+     * @param GetCapableManagerInterface $servicesManager The services manager for retrieving services by ID.
      */
-    public function __construct(SelectCapableInterface $servicesSelectRm, $exprBuilder)
+    public function __construct(GetCapableManagerInterface $servicesManager)
     {
-        $this->servicesSelectRm = $servicesSelectRm;
-        $this->exprBuilder      = $exprBuilder;
+        $this->servicesManager = $servicesManager;
     }
 
     /**
@@ -121,19 +111,14 @@ class BookingPriceEvaluator implements EvaluableInterface
         $duration  = $this->_normalizeInt($booking->getDuration());
         $serviceId = $booking->getState()->get('service_id');
 
-        $b = $this->exprBuilder;
-
-        $condition = $b->eq($b->ef('service', 'id'), $b->lit($serviceId));
-        // EDD Bookings' services select RM only supports AND top-level expressions
-        $services = $this->servicesSelectRm->select($b->and($condition));
-
-        if ($this->_countIterable($services) === 0) {
+        try {
+            $service = $this->servicesManager->get($serviceId);
+        } catch (NotFoundExceptionInterface $exception) {
             throw $this->_createRuntimeException(
-                $this->__('Cannot determine price - service ID in booking does not match a service'), null, null
+                $this->__('Cannot determine booking price - the booked service does not exist'), null, $exception
             );
         }
 
-        $service = reset($services);
         $lengths = $this->_containerGet($service, 'session_lengths');
         $lengths = $this->_normalizeIterable($lengths);
 

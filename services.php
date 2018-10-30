@@ -34,8 +34,7 @@ return [
      */
     'eddbk_add_booking_to_cart_handler' => function (ContainerInterface $c) {
         return new AddBookingToCartHandler(
-            $c->get('eddbk_services_select_rm'),
-            $c->get('sql_expression_builder'),
+            $c->get('eddbk_services_manager'),
             $c->get('edd_cart'),
             $c->get('eddbk_cart/cart_items')
         );
@@ -95,8 +94,7 @@ return [
      */
     'eddbk_filter_cart_item_name_handler' => function (ContainerInterface $c) {
         return new FilterCartItemNameHandler(
-            $c->get('eddbk_services_select_rm'),
-            $c->get('sql_expression_builder')
+            $c->get('eddbk_services_manager')
         );
     },
 
@@ -142,7 +140,7 @@ return [
             $c->get('eddbk_confirmation_table_template'),
             $c->get('eddbk_confirmation_booking_row_template'),
             $c->get('bookings_select_rm'),
-            $c->get('eddbk_services_select_rm'),
+            $c->get('eddbk_services_manager'),
             $c->get('sql_expression_builder'),
             $c->get('eddbk_cart/confirmation_page/booking_datetime_format'),
             $c->get('eddbk_cart/fallback_timezone')
@@ -224,8 +222,7 @@ return [
      */
     'eddbk_booking_price_evaluator' => function (ContainerInterface $c) {
         return new BookingPriceEvaluator(
-            $c->get('eddbk_services_select_rm'),
-            $c->get('sql_expression_builder')
+            $c->get('eddbk_services_manager')
         );
     },
 

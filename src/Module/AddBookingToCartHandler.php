@@ -11,11 +11,11 @@ use Dhii\Data\Container\NormalizeContainerCapableTrait;
 use Dhii\Data\Container\NormalizeKeyCapableTrait;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
+use Dhii\Exception\CreateRuntimeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Iterator\CountIterableCapableTrait;
 use Dhii\Iterator\ResolveIteratorCapableTrait;
-use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
@@ -28,6 +28,8 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventManager\EventInterface;
 use RebelCode\Bookings\StateAwareBookingInterface;
 use RebelCode\EddBookings\Logic\Module\BookingTransitionInterface as Transition;
+use RebelCode\Entity\GetCapableManagerInterface;
+use RuntimeException;
 use stdClass;
 
 /**
@@ -77,25 +79,19 @@ class AddBookingToCartHandler implements InvocableInterface
     use CreateNotFoundExceptionCapableTrait;
 
     /* @since [*next-version*] */
+    use CreateRuntimeExceptionCapableTrait;
+
+    /* @since [*next-version*] */
     use StringTranslatingTrait;
 
     /**
-     * The services SELECT resource model.
+     * The services manager for retrieving services by ID.
      *
      * @since [*next-version*]
      *
-     * @var SelectCapableInterface
+     * @var GetCapableManagerInterface
      */
-    protected $servicesSelectRm;
-
-    /**
-     * The expression builder.
-     *
-     * @since [*next-version*]
-     *
-     * @var object
-     */
-    protected $exprBuilder;
+    protected $servicesManager;
 
     /**
      * The EDD cart instance.
@@ -120,17 +116,15 @@ class AddBookingToCartHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param SelectCapableInterface $servicesSelectRm The services SELECT resource model.
-     * @param object                 $exprBuilder      The expression builder.
-     * @param EDD_Cart               $eddCart          The EDD cart instance.
-     * @param Stringable|string      $cartItemConfig   The cart item data config.
+     * @param GetCapableManagerInterface $servicesManager The services manager for retrieving services by ID.
+     * @param EDD_Cart                   $eddCart         The EDD cart instance.
+     * @param Stringable|string          $cartItemConfig  The cart item data config.
      */
-    public function __construct($servicesSelectRm, $exprBuilder, EDD_Cart $eddCart, $cartItemConfig)
+    public function __construct(GetCapableManagerInterface $servicesManager, EDD_Cart $eddCart, $cartItemConfig)
     {
-        $this->servicesSelectRm = $servicesSelectRm;
-        $this->exprBuilder      = $exprBuilder;
-        $this->eddCart          = $eddCart;
-        $this->cartItemConfig   = $cartItemConfig;
+        $this->servicesManager = $servicesManager;
+        $this->eddCart         = $eddCart;
+        $this->cartItemConfig  = $cartItemConfig;
     }
 
     /**
@@ -175,6 +169,7 @@ class AddBookingToCartHandler implements InvocableInterface
      * @throws InvalidArgumentException    If the booking is not a valid container.
      * @throws NotFoundExceptionInterface  If the service ID was not be found in the booking data.
      * @throws ContainerExceptionInterface If an error occurred while reading the booking data.
+     * @throws RuntimeException            If the service for which the booking was made does not exist.
      */
     protected function _addToCart(StateAwareBookingInterface $booking)
     {
@@ -189,8 +184,15 @@ class AddBookingToCartHandler implements InvocableInterface
         $bookingIdKey = $this->_containerGetPath($this->cartItemConfig, ['data', 'booking_id_key']);
         $priceIdKey   = $this->_containerGetPath($this->cartItemConfig, ['data', 'price_id_key']);
 
+        try {
+            $service = $this->servicesManager->get($serviceId);
+        } catch (NotFoundExceptionInterface $exception) {
+            throw $this->_createRuntimeException(
+                $this->__('Service with ID "%s" does not exist', [$serviceId]), null, $exception
+            );
+        }
+
         // Find the price ID
-        $service = $this->_getServiceById($serviceId);
         $lengths = $this->_containerGet($service, 'session_lengths');
         $priceId = null;
         foreach ($lengths as $_idx => $_lengthInfo) {
@@ -212,28 +214,5 @@ class AddBookingToCartHandler implements InvocableInterface
 
         // Add the service (EDD Download) to the cart with the additional EDD Bookings data
         $this->eddCart->add($serviceId, $data);
-    }
-
-    /**
-     * Retrieves a booking by ID.
-     *
-     * @since [*next-version*]
-     *
-     * @param int|string|Stringable $serviceId The ID of the service to retrieve.
-     *
-     * @return array|stdClass|ArrayAccess|ContainerInterface|null The service instance, or null if no service was
-     *                                                            found for the given ID.
-     */
-    protected function _getServiceById($serviceId)
-    {
-        $b = $this->exprBuilder;
-
-        $services = $this->servicesSelectRm->select(
-            $b->and(
-                $b->eq($b->ef('service', 'id'), $b->lit($serviceId))
-            )
-        );
-
-        return reset($services) ? : null;
     }
 }

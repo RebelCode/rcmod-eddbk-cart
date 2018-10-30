@@ -13,10 +13,11 @@ use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Iterator\CountIterableCapableTrait;
 use Dhii\Iterator\ResolveIteratorCapableTrait;
-use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventManager\EventInterface;
+use RebelCode\Entity\GetCapableManagerInterface;
 
 /**
  * The handler for filtering cart item names to just be the service names.
@@ -62,35 +63,24 @@ class FilterCartItemNameHandler implements InvocableInterface
     use StringTranslatingTrait;
 
     /**
-     * The services SELECT resource model.
+     * The services manager for retrieving services by ID.
      *
      * @since [*next-version*]
      *
-     * @var SelectCapableInterface
+     * @var GetCapableManagerInterface
      */
-    protected $servicesSelectRm;
-
-    /**
-     * The expression builder.
-     *
-     * @since [*next-version*]
-     *
-     * @var object
-     */
-    protected $exprBuilder;
+    protected $servicesManager;
 
     /**
      * Constructor.
      *
      * @since [*next-version*]
      *
-     * @param SelectCapableInterface $servicesSelectRm The services SELECT resource model.
-     * @param object                 $exprBuilder      The expression builder.
+     * @param GetCapableManagerInterface $servicesManager The services manager for retrieving services by ID.
      */
-    public function __construct(SelectCapableInterface $servicesSelectRm, $exprBuilder)
+    public function __construct(GetCapableManagerInterface $servicesManager)
     {
-        $this->servicesSelectRm = $servicesSelectRm;
-        $this->exprBuilder      = $exprBuilder;
+        $this->servicesManager = $servicesManager;
     }
 
     /**
@@ -115,24 +105,13 @@ class FilterCartItemNameHandler implements InvocableInterface
             return;
         }
 
-        // Alias expression builder
-        $b = $this->exprBuilder;
-        // EDD Bookings' services select RM only supports AND top-level expressions
-        $services = $this->servicesSelectRm->select($b->and(
-            $b->eq(
-                $b->ef('service', 'id'),
-                $b->lit($serviceId)
-            )
-        ));
-
-        // Download is not a service - stop
-        if ($this->_countIterable($services) === 0) {
+        try {
+            $service = $this->servicesManager->get($serviceId);
+        } catch (NotFoundExceptionInterface $exception) {
             return;
         }
 
-        // Get the service and its name
-        $service = reset($services);
-        $name    = $this->_containerGet($service, 'name');
+        $name = $this->_containerGet($service, 'name');
 
         // Set to event
         $event->setParams([0 => $name] + $event->getParams());
