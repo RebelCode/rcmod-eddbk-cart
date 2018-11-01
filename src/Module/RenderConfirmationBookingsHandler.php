@@ -277,7 +277,10 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
     protected function _getServiceName($serviceId)
     {
         return $this->serviceNameCache->get($serviceId, function ($serviceId) {
-            return $this->servicesManager->get($serviceId);
+            $service = $this->servicesManager->get($serviceId);
+            $name    = $this->_containerGet($service, 'name');
+
+            return $name;
         });
     }
 }
