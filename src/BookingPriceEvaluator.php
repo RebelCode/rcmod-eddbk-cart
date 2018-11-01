@@ -132,7 +132,7 @@ class BookingPriceEvaluator implements EvaluableInterface
         }
 
         throw $this->_createRuntimeException(
-            $this->__('Cannot determine booking price - booking does not match any session length'), null, null
+            $this->__('Cannot determine booking price - booking does not match any session type'), null, null
         );
     }
 }
