@@ -127,7 +127,7 @@ class BookingPriceEvaluator implements EvaluableInterface
             $_duration = $this->_normalizeInt($this->_containerGet($_data, 'duration'));
 
             if ($bookingDuration === $_duration) {
-                return $this->_containerGet($_data, 'price');
+                return $this->_containerGet($_sessionType, 'price');
             }
         }
 
