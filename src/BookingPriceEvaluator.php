@@ -108,25 +108,26 @@ class BookingPriceEvaluator implements EvaluableInterface
             );
         }
 
-        $duration  = $this->_normalizeInt($booking->getDuration());
-        $serviceId = $booking->getState()->get('service_id');
+        $bookingDuration = $this->_normalizeInt($booking->getDuration());
 
         try {
-            $service = $this->servicesManager->get($serviceId);
+            $serviceId = $booking->getState()->get('service_id');
+            $service   = $this->servicesManager->get($serviceId);
         } catch (NotFoundExceptionInterface $exception) {
             throw $this->_createRuntimeException(
                 $this->__('Cannot determine booking price - the booked service does not exist'), null, $exception
             );
         }
 
-        $lengths = $this->_containerGet($service, 'session_lengths');
-        $lengths = $this->_normalizeIterable($lengths);
+        $sessionTypes = $this->_containerGet($service, 'session_types');
+        $sessionTypes = $this->_normalizeIterable($sessionTypes);
 
-        foreach ($lengths as $_lengthInfo) {
-            $_length = $this->_normalizeInt($this->_containerGet($_lengthInfo, 'sessionLength'));
+        foreach ($sessionTypes as $_sessionType) {
+            $_data     = $this->_containerGet($_sessionType, 'data');
+            $_duration = $this->_normalizeInt($this->_containerGet($_data, 'duration'));
 
-            if ($duration === $_length) {
-                return $this->_containerGet($_lengthInfo, 'price');
+            if ($bookingDuration === $_duration) {
+                return $this->_containerGet($_data, 'price');
             }
         }
 
