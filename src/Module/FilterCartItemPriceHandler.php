@@ -32,7 +32,7 @@ use Psr\EventManager\EventInterface;
 use stdClass;
 
 /**
- * The handler that filters a cart item's price to the matching booking session length price, if it is a cart booking.
+ * The handler that filters a cart item's price to the matching booking session type price, if it is a cart booking.
  *
  * @since [*next-version*]
  */

@@ -175,9 +175,9 @@ class AddBookingToCartHandler implements InvocableInterface
     {
         $state = $booking->getState();
 
-        $bookingId = $state->get('id');
-        $serviceId = $state->get('service_id');
-        $duration  = $booking->getDuration();
+        $bookingId  = $state->get('id');
+        $serviceId  = $state->get('service_id');
+        $bkDuration = $booking->getDuration();
 
         // Get the cart item data keys from the cart item config
         $eddBkKey     = $this->_containerGetPath($this->cartItemConfig, ['data', 'eddbk_key']);
@@ -193,12 +193,13 @@ class AddBookingToCartHandler implements InvocableInterface
         }
 
         // Find the price ID
-        $lengths = $this->_containerGet($service, 'session_lengths');
+        $types   = $this->_containerGet($service, 'session_types');
         $priceId = null;
-        foreach ($lengths as $_idx => $_lengthInfo) {
-            $_length = (int) $this->_containerGet($_lengthInfo, 'sessionLength');
+        foreach ($types as $_idx => $_type) {
+            $_data     = $this->_containerGet($_type, 'data');
+            $_duration = (int) $this->_containerGet($_data, 'duration');
 
-            if ($_length === $duration) {
+            if ($_duration === $bkDuration) {
                 $priceId = $_idx;
                 break;
             }
