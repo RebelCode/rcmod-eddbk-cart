@@ -2,10 +2,11 @@
 
 namespace RebelCode\EddBookings\Cart;
 
+use Dhii\Data\StateAwareInterface;
 use Dhii\Data\ValueAwareInterface;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
-use RebelCode\Bookings\StateAwareBookingInterface;
+use RebelCode\Bookings\BookingInterface;
 
 /**
  * An implementation of an object that can provide a booking instance.
@@ -25,7 +26,7 @@ class BookingValueAware implements ValueAwareInterface
      *
      * @since [*next-version*]
      *
-     * @var StateAwareBookingInterface
+     * @var BookingInterface|StateAwareInterface
      */
     protected $booking;
 
@@ -34,9 +35,9 @@ class BookingValueAware implements ValueAwareInterface
      *
      * @since [*next-version*]
      *
-     * @param StateAwareBookingInterface $booking The booking instance.
+     * @param BookingInterface|StateAwareInterface $booking The booking instance. Must also be state-aware.
      */
-    public function __construct(StateAwareBookingInterface $booking)
+    public function __construct(BookingInterface $booking)
     {
         $this->booking = $booking;
     }
@@ -46,7 +47,7 @@ class BookingValueAware implements ValueAwareInterface
      *
      * @since [*next-version*]
      *
-     * @return StateAwareBookingInterface
+     * @return BookingInterface|StateAwareInterface
      */
     public function getValue()
     {

@@ -9,6 +9,7 @@ use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
 use Dhii\Data\Container\NormalizeContainerCapableTrait;
 use Dhii\Data\Container\NormalizeKeyCapableTrait;
+use Dhii\Data\StateAwareInterface;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
 use Dhii\Exception\CreateRuntimeExceptionCapableTrait;
@@ -26,7 +27,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventManager\EventInterface;
-use RebelCode\Bookings\StateAwareBookingInterface;
+use RebelCode\Bookings\BookingInterface;
 use RebelCode\EddBookings\Logic\Module\BookingTransitionInterface as Transition;
 use RebelCode\Entity\GetCapableManagerInterface;
 use RuntimeException;
@@ -150,7 +151,8 @@ class AddBookingToCartHandler implements InvocableInterface
         // Get and validate the booking from the event
         $booking = $event->getParam('booking');
 
-        if (!($booking instanceof StateAwareBookingInterface)) {
+        // Booking must implement both of these interfaces
+        if (!($booking instanceof BookingInterface) || !($booking instanceof StateAwareInterface)) {
             throw $this->_createInvalidArgumentException(
                 $this->__('Booking in event is not a valid state-aware instance'), null, null, $booking
             );
@@ -164,14 +166,14 @@ class AddBookingToCartHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param StateAwareBookingInterface $booking The booking.
+     * @param BookingInterface|StateAwareInterface $booking The booking.
      *
      * @throws InvalidArgumentException    If the booking is not a valid container.
      * @throws NotFoundExceptionInterface  If the service ID was not be found in the booking data.
      * @throws ContainerExceptionInterface If an error occurred while reading the booking data.
      * @throws RuntimeException            If the service for which the booking was made does not exist.
      */
-    protected function _addToCart(StateAwareBookingInterface $booking)
+    protected function _addToCart($booking)
     {
         $state = $booking->getState();
 
