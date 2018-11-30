@@ -16,6 +16,7 @@ use Dhii\Exception\CreateRuntimeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Iterator\CountIterableCapableTrait;
 use Dhii\Iterator\ResolveIteratorCapableTrait;
+use Dhii\Util\Normalization\NormalizeArrayCapableTrait;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeIterableCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
@@ -47,6 +48,9 @@ class BookingPriceEvaluator implements EvaluableInterface
 
     /* @since [*next-version*] */
     use NormalizeStringCapableTrait;
+
+    /* @since [*next-version*] */
+    use NormalizeArrayCapableTrait;
 
     /* @since [*next-version*] */
     use NormalizeContainerCapableTrait;
@@ -108,7 +112,8 @@ class BookingPriceEvaluator implements EvaluableInterface
             );
         }
 
-        $bookingDuration = $this->_normalizeInt($booking->getDuration());
+        $bookingDuration  = $this->_normalizeInt($booking->getDuration());
+        $bookingResources = $this->_normalizeArray($booking->getResourceIds());
 
         try {
             $serviceId = $booking->getState()->get('service_id');
@@ -123,10 +128,12 @@ class BookingPriceEvaluator implements EvaluableInterface
         $sessionTypes = $this->_normalizeIterable($sessionTypes);
 
         foreach ($sessionTypes as $_sessionType) {
-            $_data     = $this->_containerGet($_sessionType, 'data');
-            $_duration = $this->_normalizeInt($this->_containerGet($_data, 'duration'));
+            $_data          = $this->_containerGet($_sessionType, 'data');
+            $_duration      = $this->_normalizeInt($this->_containerGet($_data, 'duration'));
+            $_resources     = $this->_containerGet($_data, 'resources');
+            $_rIntersection = array_intersect($_resources, $bookingResources);
 
-            if ($bookingDuration === $_duration) {
+            if ($bookingDuration === $_duration && !empty($_rIntersection)) {
                 return $this->_containerGet($_sessionType, 'price');
             }
         }
