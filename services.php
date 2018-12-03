@@ -1,7 +1,6 @@
 <?php
 
 use Dhii\Cache\MemoryMemoizer;
-use Dhii\Output\PlaceholderTemplate;
 use Dhii\Output\PlaceholderTemplateFactory;
 use Dhii\Output\TemplateFactoryInterface;
 use Psr\Container\ContainerInterface;
@@ -10,7 +9,6 @@ use RebelCode\EddBookings\Cart\BookingValueAwareFactory;
 use RebelCode\EddBookings\Cart\Module\AddBookingToCartHandler;
 use RebelCode\EddBookings\Cart\Module\FilterCartItemNameHandler;
 use RebelCode\EddBookings\Cart\Module\FilterCartItemPriceHandler;
-use RebelCode\EddBookings\Cart\Module\FilterCartItemPriceOptionIdHandler;
 use RebelCode\EddBookings\Cart\Module\RemoveBookingFromCartHandler;
 use RebelCode\EddBookings\Cart\Module\RenderCartBookingInfoHandler;
 use RebelCode\EddBookings\Cart\Module\RenderConfirmationBookingsHandler;
@@ -123,6 +121,11 @@ return [
         return new RenderCartBookingInfoHandler(
             $c->get('eddbk_cart_booking_info_template'),
             $c->get('bookings_select_rm'),
+            $c->get('booking_factory'),
+            $c->get('eddbk_services_manager'),
+            $c->get('resources_entity_manager'),
+            $c->get('eddbk_cart_service_cache'),
+            $c->get('eddbk_cart_resource_cache'),
             $c->get('sql_expression_builder'),
             $c->get('eddbk_cart/cart_items'),
             $c->get('eddbk_cart/fallback_timezone')
@@ -136,11 +139,14 @@ return [
      */
     'eddbk_render_confirmation_bookings_handler' => function(ContainerInterface $c) {
         return new RenderConfirmationBookingsHandler(
-            $c->get('eddbk_cart_service_name_cache'),
             $c->get('eddbk_confirmation_table_template'),
             $c->get('eddbk_confirmation_booking_row_template'),
             $c->get('bookings_select_rm'),
+            $c->get('booking_factory'),
             $c->get('eddbk_services_manager'),
+            $c->get('resources_entity_manager'),
+            $c->get('eddbk_cart_service_cache'),
+            $c->get('eddbk_cart_resource_cache'),
             $c->get('sql_expression_builder'),
             $c->get('eddbk_cart/confirmation_page/booking_datetime_format'),
             $c->get('eddbk_cart/fallback_timezone')
@@ -148,11 +154,20 @@ return [
     },
 
     /*
-     * The cache that caches service names by ID.
+     * The cache that caches service by ID.
      *
      * @since [*next-version*]
      */
-    'eddbk_cart_service_name_cache' => function (ContainerInterface $c) {
+    'eddbk_cart_service_cache' => function (ContainerInterface $c) {
+        return new MemoryMemoizer();
+    },
+
+    /*
+     * The cache that caches resource by ID.
+     *
+     * @since [*next-version*]
+     */
+    'eddbk_cart_resource_cache' => function (ContainerInterface $c) {
         return new MemoryMemoizer();
     },
 
