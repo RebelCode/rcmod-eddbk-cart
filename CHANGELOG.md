@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+
+## [0.1-alpha10] - 2018-12-05
 ### Added
 - Showing booking resources and session type info in the cart and confirmation pages.
 
