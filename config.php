@@ -79,7 +79,7 @@ return [
              *
              * @since [*next-version*]
              */
-            'booking_datetime_format' => 'D, jS M Y, H:i',
+            'booking_datetime_format' => 'l jS M Y, H:i',
 
             /*
              * Templates used in the confirmation page.

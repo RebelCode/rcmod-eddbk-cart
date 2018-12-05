@@ -5,8 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+### Added
+- Showing booking resources and session type info in the cart and confirmation pages.
+
 ### Changed
 - Booking price is now determined using the new session type data.
+- Using a more readable date format in the cart and confirmation pages.
 
 ## [0.1-alpha9] - 2018-11-01
 ### Fixed

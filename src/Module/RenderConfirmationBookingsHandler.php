@@ -2,15 +2,16 @@
 
 namespace RebelCode\EddBookings\Cart\Module;
 
-use ArrayAccess;
 use Carbon\Carbon;
-use Dhii\Cache\SimpleCacheInterface;
+use Carbon\CarbonInterval;
+use Dhii\Cache\ContainerInterface as CacheContainerInterface;
 use Dhii\Data\Container\ContainerGetCapableTrait;
 use Dhii\Data\Container\ContainerHasCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
 use Dhii\Data\Container\NormalizeContainerCapableTrait;
 use Dhii\Data\Container\NormalizeKeyCapableTrait;
+use Dhii\Data\StateAwareInterface;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
 use Dhii\Exception\CreateRuntimeExceptionCapableTrait;
@@ -19,10 +20,12 @@ use Dhii\Invocation\InvocableInterface;
 use Dhii\Output\TemplateAwareTrait;
 use Dhii\Output\TemplateInterface;
 use Dhii\Storage\Resource\SelectCapableInterface;
+use Dhii\Util\Normalization\NormalizeArrayCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
-use Psr\Container\ContainerInterface;
 use Psr\EventManager\EventInterface;
+use RebelCode\Bookings\BookingFactoryInterface;
+use RebelCode\Bookings\BookingInterface;
 use RebelCode\Entity\GetCapableManagerInterface;
 use stdClass;
 use Traversable;
@@ -41,6 +44,12 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
     use GetBookingDisplayTimezoneCapableTrait;
 
     /* @since [*next-version*] */
+    use GetBookingSessionInfoCapableTrait;
+
+    /* @since [*next-version*] */
+    use GetBookingSessionTypeCapableTrait;
+
+    /* @since [*next-version*] */
     use ContainerGetCapableTrait;
 
     /* @since [*next-version*] */
@@ -54,6 +63,9 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
 
     /* @since [*next-version*] */
     use NormalizeStringCapableTrait;
+
+    /* @since [*next-version*] */
+    use NormalizeArrayCapableTrait;
 
     /* @since [*next-version*] */
     use NormalizeContainerCapableTrait;
@@ -77,15 +89,6 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
     use StringTranslatingTrait;
 
     /**
-     * The service name cache.
-     *
-     * @since [*next-version*]
-     *
-     * @var SimpleCacheInterface
-     */
-    protected $serviceNameCache;
-
-    /**
      * The template for rendering booking rows.
      *
      * @since [*next-version*]
@@ -104,6 +107,15 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
     protected $bookingsSelectRm;
 
     /**
+     * The factory for creating booking instances.
+     *
+     * @since [*next-version*]
+     *
+     * @var BookingFactoryInterface
+     */
+    protected $bookingFactory;
+
+    /**
      * The services manager for retrieving services by ID.
      *
      * @since [*next-version*]
@@ -111,6 +123,33 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
      * @var GetCapableManagerInterface
      */
     protected $servicesManager;
+
+    /**
+     * The resources manager for retrieving resources by ID.
+     *
+     * @since [*next-version*]
+     *
+     * @var GetCapableManagerInterface
+     */
+    protected $resourcesManager;
+
+    /**
+     * The services cache.
+     *
+     * @since [*next-version*]
+     *
+     * @var CacheContainerInterface
+     */
+    protected $servicesCache;
+
+    /**
+     * The resources cache.
+     *
+     * @since [*next-version*]
+     *
+     * @var CacheContainerInterface
+     */
+    protected $resourcesCache;
 
     /**
      * The expression builder.
@@ -135,31 +174,41 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param SimpleCacheInterface       $serviceNameCache     The cache for service names.
      * @param TemplateInterface          $bookingTableTemplate The bookings table template.
      * @param TemplateInterface          $bookingRowTemplate   The bookings table row template.
      * @param SelectCapableInterface     $bookingsSelectRm     The bookings SELECT resource model.
+     * @param BookingFactoryInterface    $bookingFactory       The bookings factory.
      * @param GetCapableManagerInterface $servicesManager      The services manager for retrieving services by ID.
+     * @param GetCapableManagerInterface $resourcesManager     The resources manager for retrieving resources by ID.
+     * @param CacheContainerInterface    $serviceCache         The cache for service.
+     * @param CacheContainerInterface    $resourceCache        The cache for resource.
      * @param object                     $exprBuilder          The expression builder.
      * @param string|Stringable          $bookingFormat        The bookings date and time format.
      * @param string|Stringable|null     $fallbackTz           The fallback timezone name.
      */
     public function __construct(
-        SimpleCacheInterface $serviceNameCache,
         TemplateInterface $bookingTableTemplate,
         TemplateInterface $bookingRowTemplate,
         SelectCapableInterface $bookingsSelectRm,
+        BookingFactoryInterface $bookingFactory,
         GetCapableManagerInterface $servicesManager,
+        GetCapableManagerInterface $resourcesManager,
+        CacheContainerInterface $serviceCache,
+        CacheContainerInterface $resourceCache,
         $exprBuilder,
         $bookingFormat,
         $fallbackTz
     ) {
         $this->_setTemplate($bookingTableTemplate);
         $this->_setFallbackTz($fallbackTz);
-        $this->serviceNameCache   = $serviceNameCache;
+
         $this->bookingRowTemplate = $bookingRowTemplate;
         $this->bookingsSelectRm   = $bookingsSelectRm;
+        $this->bookingFactory     = $bookingFactory;
         $this->servicesManager    = $servicesManager;
+        $this->resourcesManager   = $resourcesManager;
+        $this->servicesCache      = $serviceCache;
+        $this->resourcesCache     = $resourceCache;
         $this->exprBuilder        = $exprBuilder;
         $this->bookingFormat      = $bookingFormat;
     }
@@ -209,16 +258,18 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
     protected function _renderBookingsTable($bookings)
     {
         $rows = '';
-        foreach ($bookings as $_booking) {
-            $rows = $this->_renderBookingRow($_booking);
+        foreach ($bookings as $_bookingData) {
+            $_booking = ($_bookingData instanceof BookingInterface)
+                ? $_bookingData
+                : $this->bookingFactory->make([BookingFactoryInterface::K_DATA => $_bookingData]);
+
+            $rows .= $this->_renderBookingRow($_booking);
         }
 
         return $this->_getTemplate()->render([
             'table_heading'        => $this->__('Bookings'),
             'service_column'       => $this->__('Service'),
-            'booking_start_column' => $this->__('Start'),
-            'booking_end_column'   => $this->__('End'),
-            'booking_tz_column'    => $this->__('Timezone'),
+            'booking_start_column' => $this->__('Date'),
             'booking_rows'         => $rows,
         ]);
     }
@@ -228,17 +279,19 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param array|stdClass|ArrayAccess|ContainerInterface $bookingData The booking data.
+     * @param BookingInterface|StateAwareInterface $booking The booking.
      *
      * @return string|Stringable The rendered booking row.
      */
-    protected function _renderBookingRow($bookingData)
+    protected function _renderBookingRow(BookingInterface $booking)
     {
+        $bookingData = $booking->getState();
+
         $timezone = $this->_getDisplayTimezone($bookingData);
 
         // Get timestamps from booking
-        $startTs = $this->_containerGet($bookingData, 'start');
-        $endTs   = $this->_containerGet($bookingData, 'end');
+        $startTs = $booking->getStart();
+        $endTs   = $booking->getEnd();
 
         // Create date time helper instances
         $startDt = Carbon::createFromTimestampUTC($startTs);
@@ -254,14 +307,28 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
         $startStr = $startDt->format($this->bookingFormat);
         $endStr   = $endDt->format($this->bookingFormat);
 
-        // ID of the booking's service
-        $serviceId = $this->_containerGet($bookingData, 'service_id');
+        // Get the ID and name of the booking's service
+        $serviceId   = $this->_containerGet($bookingData, 'service_id');
+        $serviceName = $this->_getServiceName($serviceId);
+        // Get the matching session's info
+        $sessionInfo = $this->_getBookingSessionInfo($booking);
+        // Append the session label to the service name if it exists
+        $sessionLabel = $this->_containerGet($sessionInfo, 'session_label');
+        if (empty($sessionLabel)) {
+            $sessionLabel = CarbonInterval::seconds($booking->getDuration())->cascade()->forHumans();
+        }
+        // Prepare the resources text
+        $resources     = $this->_containerGet($sessionInfo, 'resource_names');
+        $resourcesText = !empty($resources)
+            ? sprintf('%s %s', $this->__('with'), implode(', ', $resources))
+            : '';
 
         return $this->bookingRowTemplate->render([
-            'service_name' => $this->_getServiceName($serviceId),
-            'start_text'   => $startStr,
-            'end_text'     => $endStr,
-            'timezone'     => $this->_normalizeTimezoneName($timezone->getName()),
+            'service_name'      => sprintf('%s – %s', $serviceName, $sessionLabel),
+            'resources'         => $resourcesText,
+            'start_text'        => $startStr,
+            'end_text'          => $endStr,
+            'timezone'          => $this->_normalizeTimezoneName($timezone->getName()),
         ]);
     }
 
@@ -276,11 +343,50 @@ class RenderConfirmationBookingsHandler implements InvocableInterface
      */
     protected function _getServiceName($serviceId)
     {
-        return $this->serviceNameCache->get($serviceId, function ($serviceId) {
-            $service = $this->servicesManager->get($serviceId);
-            $name    = $this->_containerGet($service, 'name');
-
-            return $name;
+        $service = $this->servicesCache->get($serviceId, function ($serviceId) {
+            return $this->servicesManager->get($serviceId);
         });
+
+        return $this->_containerGet($service, 'name');
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @since [*next-version*]
+     */
+    protected function _getResourcesManager()
+    {
+        return $this->resourcesManager;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @since [*next-version*]
+     */
+    protected function _getResourceCache()
+    {
+        return $this->resourcesCache;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @since [*next-version*]
+     */
+    protected function _getServiceCache()
+    {
+        return $this->servicesCache;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @since [*next-version*]
+     */
+    protected function _getServicesManager()
+    {
+        return $this->servicesManager;
     }
 }
