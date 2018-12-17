@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+### Fixed
+- Processing session types without resources resulted in an exception being thrown.
 
 ## [0.1-alpha10] - 2018-12-05
 ### Added
