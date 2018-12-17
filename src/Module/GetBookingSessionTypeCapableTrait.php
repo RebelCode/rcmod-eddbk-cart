@@ -58,7 +58,11 @@ trait GetBookingSessionTypeCapableTrait
         foreach ($sessionTypes as $_sessionType) {
             $_data      = $this->_containerGet($_sessionType, 'data');
             $_duration  = (int) $this->_containerGet($_data, 'duration');
-            $_resources = $this->_containerGet($_data, 'resources');
+            try {
+                $_resources = $this->_containerGet($_data, 'resources');
+            } catch (NotFoundExceptionInterface $exception) {
+                $_resources = [];
+            }
 
             // A fast way to check if a booking matches a session type in terms of resources is to intersect their
             // resources. If the resulting list is not empty, than the session type and the booking share at least
