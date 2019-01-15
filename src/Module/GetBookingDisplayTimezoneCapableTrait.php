@@ -5,7 +5,6 @@ namespace RebelCode\EddBookings\Cart\Module;
 use ArrayAccess;
 use DateTimeZone;
 use Dhii\Util\String\StringableInterface as Stringable;
-use Exception;
 use Exception as RootException;
 use InvalidArgumentException;
 use OutOfRangeException;
@@ -13,6 +12,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\ContainerInterface as BaseContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use RebelCode\Time\CreateDateTimeZoneCapableTrait;
 use stdClass;
 
 /**
@@ -22,6 +22,9 @@ use stdClass;
  */
 trait GetBookingDisplayTimezoneCapableTrait
 {
+    /* @since [*next-version*] */
+    use CreateDateTimeZoneCapableTrait;
+
     /**
      * The fallback timezone.
      *
@@ -193,43 +196,6 @@ trait GetBookingDisplayTimezoneCapableTrait
         }
 
         return $this->_createDateTimeZone($serverTz);
-    }
-
-    /**
-     * Creates a {@link DateTimeZone} object for a timezone, by name.
-     *
-     * @see DateTimeZone
-     *
-     * @since [*next-version*]
-     *
-     * @param string|Stringable $tzName The name of the timezone.
-     *
-     * @return DateTimeZone The created {@link DateTimeZone} instance.
-     *
-     * @throws InvalidArgumentException If the timezone name is not a string or stringable object.
-     * @throws OutOfRangeException If the timezone name is invalid and does not represent a valid timezone.
-     */
-    protected function _createDateTimeZone($tzName)
-    {
-        $argTz  = $tzName;
-        $tzName = $this->_normalizeString($tzName);
-
-        // If the timezone is a UTC offset timezone, transform into a valid DateTimeZone offset.
-        // See http://php.net/manual/en/datetimezone.construct.php
-        if (preg_match('/^UTC(\+|\-)(\d{1,2})(:?(\d{2}))?$/', $tzName, $matches) && count($matches) >= 2) {
-            $sign    = $matches[1];
-            $hours   = (int) $matches[2];
-            $minutes = count($matches) >= 4 ? (int) $matches[4] : 0;
-            $tzName  = sprintf('%s%02d%02d', $sign, $hours, $minutes);
-        }
-
-        try {
-            return new DateTimeZone($tzName);
-        } catch (Exception $exception) {
-            throw $this->_createOutOfRangeException(
-                $this->__('Invalid timezone name: "%1$s"', [$argTz]), null, $exception, $argTz
-            );
-        }
     }
 
     /**
