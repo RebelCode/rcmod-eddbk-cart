@@ -167,13 +167,8 @@ trait GetBookingDisplayTimezoneCapableTrait
             return null;
         }
 
-        // Convert into a time decimal (ex. 2.5 => 2.3) with the decimal part being in minutes
-        $hours   = intval($gmtOffset);
-        $minutes = 0.6 * ($gmtOffset - $hours);
-        $decimal = $hours + $minutes;
-
-        // Convert into a UTC timezone
-        $wpTimezone = sprintf('UTC%+05.0f', $decimal * 100);
+        // Ensure the sign is attached to the offset
+        $wpTimezone = sprintf('%+f', floatval($gmtOffset));
 
         return $this->_createDateTimeZone($wpTimezone);
     }
